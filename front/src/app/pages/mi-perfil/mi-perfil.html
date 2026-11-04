@@ -1,0 +1,44 @@
+<div class="perfil">
+  <aside class="tarjeta ficha">
+    <app-avatar [usuario]="usuario" [tamano]="92" />
+    <app-patente [texto]="usuario.usuario" />
+    <dl>
+      <dt>NOMBRE</dt>
+      <dd>{{ usuario.nombre }} {{ usuario.apellido }}</dd>
+      <dt>CORREO</dt>
+      <dd>{{ usuario.correo }}</dd>
+      <dt>NACIMIENTO</dt>
+      <dd>{{ usuario.fechaNacimiento | date: 'dd/MM/yyyy' }}</dd>
+      <dt>PERFIL</dt>
+      <dd>{{ usuario.perfil }}</dd>
+      <dt>DESCRIPCIÓN</dt>
+      <dd class="desc">{{ usuario.descripcion }}</dd>
+    </dl>
+  </aside>
+
+  <section class="estacionamiento" aria-labelledby="titulo-garage">
+    <header>
+      <h1 id="titulo-garage">El garage de {{ usuario.usuario }}</h1>
+      <span>{{ publicaciones.length }} autos estacionados</span>
+    </header>
+
+    <div class="cocheras">
+      @for (p of publicaciones; track p.id; let i = $index) {
+        <div class="cochera">
+          <span class="numero">cochera {{ i + 1 }}</span>
+          <article class="auto">
+            @if (i === 0) { <span class="ultima">LA ÚLTIMA</span> }
+            <div class="foto"><app-foto-auto [imagen]="p.imagen" [alt]="p.titulo" /></div>
+            <div class="info">
+              <h3>{{ p.titulo }}</h3>
+              <span>📣 {{ p.meGusta }} · 💬 {{ p.comentarios.length }}</span>
+            </div>
+          </article>
+        </div>
+      }
+      @for (l of libres; track $index) {
+        <div class="cochera libre"><span>LIBRE</span></div>
+      }
+    </div>
+  </section>
+</div>

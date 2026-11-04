@@ -1,0 +1,11 @@
+<div class="avatar"
+     [style.width.px]="tamano()"
+     [style.height.px]="tamano()"
+     [style.font-size.px]="tamano() * 0.33"
+     [style.background]="color()">
+  @if (usuario().foto; as foto) {
+    <img [src]="foto" [alt]="'Foto de ' + usuario().nombre">
+  } @else {
+    {{ iniciales() }}
+  }
+</div>

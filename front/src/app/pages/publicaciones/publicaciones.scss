@@ -1,0 +1,86 @@
+.ruta {
+  display: grid;
+  grid-template-columns: 250px minmax(300px, 392px) minmax(220px, 1fr);
+  grid-template-areas: 'conductor centro comentarios';
+  gap: 24px;
+  align-items: start;
+}
+
+.conductor {
+  grid-area: conductor;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  p { margin: 0; font-size: 13px; line-height: 1.4; }
+}
+
+.etiqueta { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--gris); }
+
+.quien {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+}
+
+.centro {
+  grid-area: centro;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.comentarios {
+  grid-area: comentarios;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  h2 { font-size: 15px; color: var(--blanco); }
+}
+
+.comentario {
+  padding: 10px 12px;
+
+  p { margin: 5px 0 0; font-size: 13px; line-height: 1.35; }
+}
+
+.autor {
+  display: inline-block;
+  padding: 0 7px;
+  border: 2px solid var(--negro);
+  border-radius: 5px;
+  font-family: var(--fuente-titulo);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.vacio { margin: 0; color: var(--blanco); opacity: 0.8; font-size: 14px; }
+
+.nuevo {
+  margin-top: 8px;
+  min-height: 42px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 30px;
+  font: inherit;
+  font-size: 13px;
+}
+
+@media (max-width: 1250px) {
+  .ruta {
+    grid-template-columns: minmax(300px, 392px) 1fr;
+    grid-template-areas:
+      'conductor conductor'
+      'centro comentarios';
+  }
+}
+
+@media (max-width: 760px) {
+  .ruta {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'conductor' 'centro' 'comentarios';
+  }
+}

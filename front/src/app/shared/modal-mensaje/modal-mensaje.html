@@ -1,0 +1,11 @@
+<div class="fondo" (click)="cerrar.emit()">
+  <div class="caja" role="dialog" aria-modal="true" aria-labelledby="modal-titulo"
+       (click)="$event.stopPropagation()">
+    <div class="icono" [class.error]="tipo() === 'error'" aria-hidden="true">
+      {{ tipo() === 'error' ? '✕' : '✓' }}
+    </div>
+    <h2 id="modal-titulo">{{ titulo() }}</h2>
+    <p>{{ mensaje() }}</p>
+    <button class="btn amarillo" type="button" (click)="cerrar.emit()" autofocus>Entendido</button>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+@if (imagen(); as src) {
+  <img [src]="src" [alt]="alt()">
+} @else {
+  <div class="relleno" role="img" [attr.aria-label]="alt() || 'Publicación sin foto'">
+    <svg viewBox="0 0 320 130" aria-hidden="true">
+      <path d="M14 92 C14 70 30 64 60 60 L104 30 C114 22 124 20 140 20 L208 20 C226 20 236 26 248 40 L268 60 C292 62 306 70 306 90 L306 98 L14 98 Z" fill="#111111"/>
+      <path d="M116 36 L140 28 L196 28 L204 56 L100 56 Z" fill="#6B6E75"/>
+      <path d="M212 28 C226 28 234 34 244 46 L252 56 L216 56 Z" fill="#6B6E75"/>
+      <circle cx="80" cy="98" r="26" fill="#111111" stroke="#2A2C31" stroke-width="6"/>
+      <circle cx="80" cy="98" r="10" fill="#C9CCD2"/>
+      <circle cx="244" cy="98" r="26" fill="#111111" stroke="#2A2C31" stroke-width="6"/>
+      <circle cx="244" cy="98" r="10" fill="#C9CCD2"/>
+    </svg>
+  </div>
+}

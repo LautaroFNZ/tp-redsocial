@@ -1,0 +1,53 @@
+.pedalera {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 18px 18px 10px;
+  border: 4px solid var(--amarillo);
+  border-radius: 16px;
+  background: #17181B;
+  box-shadow: var(--sombra);
+}
+
+.titulo {
+  position: absolute;
+  top: -12px;
+  left: 12px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--amarillo);
+  font-family: var(--fuente-titulo);
+  font-size: 11px;
+}
+
+.pedal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--blanco);
+  font: inherit;
+  cursor: pointer;
+
+  svg { transition: transform 0.1s; }
+  &:active:not(:disabled) svg { transform: translateY(4px) scaleY(0.94); }
+  &:focus-visible { outline: 3px solid var(--amarillo); }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  b { font-family: var(--fuente-titulo); font-weight: 400; font-size: 11px; }
+  small { font-size: 11px; opacity: 0.8; }
+}
+
+.marcha {
+  padding: 2px 8px;
+  border: 2px solid #F28C28;
+  border-radius: 12px;
+  color: #F28C28;
+  font-size: 10px;
+  font-weight: 700;
+}

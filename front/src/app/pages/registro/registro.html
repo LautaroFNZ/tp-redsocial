@@ -1,0 +1,92 @@
+<div class="pantalla">
+  <aside class="lateral">
+    <a routerLink="/login" aria-label="Volver al inicio">
+      <app-patente texto="GarageHub" leyenda="RED SOCIAL FIERRERA" />
+    </a>
+
+    <div class="tarjeta vista-previa">
+      <span class="etiqueta">ASÍ TE VAN A VER</span>
+
+      <div class="avatar">
+        @if (fotoUrl(); as url) {
+          <img [src]="url" alt="Vista previa de tu foto de perfil">
+        } @else {
+          {{ iniciales() }}
+        }
+      </div>
+
+      <label class="elegir-foto">
+        📷 {{ foto() ? 'Cambiar foto' : 'Elegir foto de perfil' }}
+        <input type="file" accept="image/*" (change)="elegirFoto($event)">
+      </label>
+      @if (errorFoto(); as e) { <p class="msg-error">{{ e }}</p> }
+
+      <app-patente [texto]="patente()" />
+      <p class="nota">La patente se arma sola con tu nombre de usuario mientras escribís.</p>
+      <span class="perfil">Perfil: {{ perfil }}</span>
+    </div>
+  </aside>
+
+  <form class="tarjeta formulario" [formGroup]="form" (ngSubmit)="registrar()" novalidate>
+    <h2>Sacá tu patente</h2>
+    <p class="ayuda">Completá tus datos para abrir tu garage.</p>
+
+    <div class="grilla">
+      @for (c of campos; track c.control) {
+        <div class="campo">
+          <label [attr.for]="'reg-' + c.control">{{ c.etiqueta }}</label>
+          <input [id]="'reg-' + c.control" [type]="c.tipo" [formControlName]="c.control"
+                 [attr.autocomplete]="c.auto" [class.error]="error(c.control)">
+          @if (error(c.control); as e) { <p class="msg-error">{{ e }}</p> }
+        </div>
+      }
+
+      <div class="campo">
+        <label for="reg-password">Contraseña</label>
+        <input id="reg-password" type="password" formControlName="password" autocomplete="new-password"
+               [class.error]="error('password')">
+        @let password = form.controls.password;
+        @if (password.dirty || enviado()) {
+          <ul class="reglas">
+            @for (regla of reglas; track regla.error) {
+              <li [class.ok]="!password.hasError(regla.error)">
+                {{ password.hasError(regla.error) ? '✕' : '✓' }} {{ regla.texto }}
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="reg-repetir">Repetir contraseña</label>
+        <input id="reg-repetir" type="password" formControlName="repetirPassword" autocomplete="new-password"
+               [class.error]="errorRepetir()">
+        @if (errorRepetir(); as e) { <p class="msg-error">{{ e }}</p> }
+      </div>
+
+      <div class="campo">
+        <label for="reg-fecha">Fecha de nacimiento</label>
+        <input id="reg-fecha" type="date" formControlName="fechaNacimiento" [max]="hoy"
+               [class.error]="error('fechaNacimiento')">
+        @if (error('fechaNacimiento'); as e) { <p class="msg-error">{{ e }}</p> }
+      </div>
+
+      <div class="campo ancho-completo">
+        <label for="reg-descripcion">Descripción breve</label>
+        <textarea id="reg-descripcion" formControlName="descripcion" maxlength="200"
+                  placeholder="Contá qué fierros tenés…" [class.error]="error('descripcion')"></textarea>
+        <p class="contador">{{ largoDescripcion() }} / 200</p>
+        @if (error('descripcion'); as e) { <p class="msg-error">{{ e }}</p> }
+      </div>
+    </div>
+
+    <div class="acciones">
+      <p>¿Ya tenés garage? <a routerLink="/login">Entrá</a></p>
+      <button class="btn verde" type="submit">▶ Registrarme</button>
+    </div>
+  </form>
+</div>
+
+@if (modal(); as m) {
+  <app-modal-mensaje [titulo]="m.titulo" [mensaje]="m.mensaje" [tipo]="m.tipo" (cerrar)="cerrarModal()" />
+}

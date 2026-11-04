@@ -1,0 +1,59 @@
+<div class="pantalla">
+  <section class="presentacion">
+    <app-patente texto="GarageHub" leyenda="RED SOCIAL FIERRERA" tamano="grande" />
+    <h1>Abrí el portón<br>y mostrá tu fierro.</h1>
+    <p>Publicá tus autos, recorré la ruta con los pedales y visitá el garage de los demás.</p>
+  </section>
+
+  <form class="tarjeta formulario" [formGroup]="form" (ngSubmit)="ingresar()" novalidate>
+    <h2>Entrar al garage</h2>
+    <p class="ayuda">Ingresá con tu correo o tu nombre de usuario.</p>
+
+    <div class="campo">
+      <label for="login-usuario">Correo o usuario</label>
+      <input id="login-usuario" type="text" formControlName="usuario" autocomplete="username"
+             [class.error]="mostrarError('usuario')">
+      @if (mostrarError('usuario')) {
+        <p class="msg-error">
+          @if (form.controls.usuario.hasError('required')) {
+            Ingresá tu correo o nombre de usuario.
+          } @else {
+            Debe tener al menos 3 caracteres.
+          }
+        </p>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="login-password">Contraseña</label>
+      <div class="con-boton">
+        <input id="login-password" [type]="verPassword() ? 'text' : 'password'"
+               formControlName="password" autocomplete="current-password"
+               [class.error]="mostrarError('password')">
+        <button type="button" class="ver" (click)="verPassword.set(!verPassword())"
+                [attr.aria-label]="verPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+          {{ verPassword() ? 'OCULTAR' : 'VER' }}
+        </button>
+      </div>
+
+      @let password = form.controls.password;
+      @if (password.dirty || enviado()) {
+        <ul class="reglas">
+          @for (regla of reglas; track regla.error) {
+            <li [class.ok]="!password.hasError(regla.error)">
+              {{ password.hasError(regla.error) ? '✕' : '✓' }} {{ regla.texto }}
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <button class="btn verde ancho" type="submit">▶ Arrancar</button>
+
+    <p class="pie">¿Todavía no tenés garage? <a routerLink="/registro">Sacá tu patente</a></p>
+  </form>
+</div>
+
+@if (modal(); as m) {
+  <app-modal-mensaje [titulo]="m.titulo" [mensaje]="m.mensaje" [tipo]="m.tipo" (cerrar)="cerrarModal()" />
+}

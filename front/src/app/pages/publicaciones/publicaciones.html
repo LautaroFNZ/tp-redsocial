@@ -1,0 +1,39 @@
+@let pub = actual();
+<div class="ruta">
+  <aside class="tarjeta conductor">
+    <span class="etiqueta">AL VOLANTE</span>
+    <div class="quien">
+      <app-avatar [usuario]="pub.autor" />
+      <b>{{ pub.autor.nombre }} {{ pub.autor.apellido }}</b>
+    </div>
+    <app-patente [texto]="pub.autor.usuario" />
+    <p>{{ pub.autor.descripcion }}</p>
+    <!-- Sprint 5: llevará al garage de ese usuario. Por ahora va a Mi garage. -->
+    <a class="btn amarillo ancho" routerLink="/mi-perfil">Ver garage de {{ pub.autor.usuario }}</a>
+  </aside>
+
+  <div class="centro">
+    <app-publicacion-card [publicacion]="pub" [posicion]="indice() + 1" />
+    <app-pedalera
+      [orden]="orden()"
+      [hayAnterior]="indice() > 0"
+      [haySiguiente]="indice() < lista().length - 1"
+      (embrague)="cambiarOrden()"
+      (freno)="anterior()"
+      (acelerador)="siguiente()" />
+  </div>
+
+  <section class="comentarios" aria-label="Comentarios">
+    <h2>Comentarios</h2>
+    @for (c of pub.comentarios; track $index) {
+      <div class="tarjeta comentario">
+        <span class="autor">{{ c.autor }}</span>
+        <p>{{ c.texto }}</p>
+      </div>
+    } @empty {
+      <p class="vacio">Todavía nadie comentó. ¡Tocá bocina y sé el primero!</p>
+    }
+    <input class="nuevo" placeholder="Escribí un comentario… (próximamente)" disabled
+           aria-label="Escribir un comentario (próximamente)">
+  </section>
+</div>

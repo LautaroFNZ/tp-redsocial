@@ -1,0 +1,36 @@
+.layout {
+  display: flex;
+  gap: 24px;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.lateral {
+  width: 250px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.logo {
+  align-self: flex-start;
+  text-decoration: none;
+  color: inherit;
+}
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.contenido {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 800px) {
+  .layout { flex-direction: column; padding: 16px; }
+  .lateral { width: auto; }
+}
