@@ -1,4 +1,5 @@
-<div class="perfil">
+<!-- Ficha que se dibuja en la columna izquierda del layout -->
+<ng-template #ficha>
   <aside class="tarjeta ficha">
     <app-avatar [usuario]="usuario" [tamano]="92" />
     <app-patente [texto]="usuario.usuario" />
@@ -15,30 +16,33 @@
       <dd class="desc">{{ usuario.descripcion }}</dd>
     </dl>
   </aside>
+</ng-template>
 
-  <section class="estacionamiento" aria-labelledby="titulo-garage">
-    <header>
-      <h1 id="titulo-garage">El garage de {{ usuario.usuario }}</h1>
-      <span>{{ publicaciones.length }} autos estacionados</span>
-    </header>
+<section class="estacionamiento" aria-labelledby="titulo-garage">
+  <header>
+    <h1 id="titulo-garage">El garage de {{ usuario.usuario }}</h1>
+    <span>{{ publicaciones.length }} autos estacionados</span>
+  </header>
 
-    <div class="cocheras">
-      @for (p of publicaciones; track p.id; let i = $index) {
-        <div class="cochera">
-          <span class="numero">cochera {{ i + 1 }}</span>
-          <article class="auto">
-            @if (i === 0) { <span class="ultima">LA ÚLTIMA</span> }
-            <div class="foto"><app-foto-auto [imagen]="p.imagen" [alt]="p.titulo" /></div>
-            <div class="info">
-              <h3>{{ p.titulo }}</h3>
-              <span>📣 {{ p.meGusta }} · 💬 {{ p.comentarios.length }}</span>
-            </div>
-          </article>
-        </div>
-      }
-      @for (l of libres; track $index) {
-        <div class="cochera libre"><span>LIBRE</span></div>
-      }
-    </div>
-  </section>
-</div>
+  <div class="cocheras">
+    @for (p of publicaciones; track p.id; let i = $index) {
+      <div class="cochera">
+        <span class="numero">cochera {{ i + 1 }}</span>
+        <article class="auto">
+          @if (i === 0) { <span class="ultima">LA ÚLTIMA</span> }
+          <div class="foto"><app-foto-auto [imagen]="p.imagen" [alt]="p.titulo" /></div>
+          <div class="info">
+            <h3>{{ p.titulo }}</h3>
+            <span class="stats">
+              <app-luz-testigo tipo="luces" [marco]="false" [tamano]="14" /> {{ p.meGusta }}
+              · 💬 {{ p.comentarios.length }}
+            </span>
+          </div>
+        </article>
+      </div>
+    }
+    @for (l of libres; track $index) {
+      <div class="cochera libre"><span>LIBRE</span></div>
+    }
+  </div>
+</section>

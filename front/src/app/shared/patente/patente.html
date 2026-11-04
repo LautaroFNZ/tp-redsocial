@@ -1,4 +1,4 @@
 <div class="patente" [class.grande]="tamano() === 'grande'">
   <div class="franja">{{ leyenda() }}</div>
-  <div class="texto">{{ texto() }}</div>
+    <div class="texto" [class.largo]="largo() === 'largo'" [class.muy-largo]="largo() === 'muy-largo'">{{ texto() }}</div>
 </div>

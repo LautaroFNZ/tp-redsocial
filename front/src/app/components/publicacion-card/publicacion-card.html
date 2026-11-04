@@ -5,13 +5,12 @@
   <span class="km" [attr.aria-label]="'Publicación número ' + posicion()">KM {{ km() }}</span>
 
   <div class="acciones">
-    <button class="accion" type="button" aria-label="Tocar bocina (me gusta)">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true">
-        <path d="M4 9h3l6-4v14l-6-4H4z"/>
-        <path d="M16 8c1.5 1 2.4 2.4 2.4 4s-.9 3-2.4 4" fill="none" stroke="#FFFFFF" stroke-width="2"/>
-      </svg>
+    <button class="accion" type="button" [class.prendida]="leGusta()" (click)="alternarLuces()"
+            [attr.aria-pressed]="leGusta()"
+            [attr.aria-label]="leGusta() ? 'Apagar las luces (quitar me gusta)' : 'Hacerle luces (me gusta)'">
+      <app-luz-testigo tipo="luces" [encendida]="leGusta()" [marco]="false" [tamano]="28" />
     </button>
-    <span>{{ p.meGusta }}</span>
+    <span>{{ luces() }}</span>
 
     <button class="accion clara" type="button" aria-label="Ver comentarios">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2.4"
@@ -20,10 +19,5 @@
       </svg>
     </button>
     <span>{{ p.comentarios.length }}</span>
-  </div>
-
-  <div class="texto">
-    <h2>{{ p.titulo }}</h2>
-    <p>{{ p.mensaje }}</p>
   </div>
 </article>

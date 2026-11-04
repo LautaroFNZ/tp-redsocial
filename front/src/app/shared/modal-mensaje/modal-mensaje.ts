@@ -1,4 +1,5 @@
 import { Component, input, output } from '@angular/core';
+import { LuzTestigo } from '../luz-testigo/luz-testigo';
 
 export interface Mensaje {
   titulo: string;
@@ -8,6 +9,7 @@ export interface Mensaje {
 
 @Component({
   selector: 'app-modal-mensaje',
+  imports: [LuzTestigo],
   templateUrl: './modal-mensaje.html',
   styleUrl: './modal-mensaje.scss',
   host: { '(document:keydown.escape)': 'cerrar.emit()' },

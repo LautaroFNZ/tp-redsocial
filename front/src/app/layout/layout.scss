@@ -1,20 +1,38 @@
+$lateral: 330px;
+$ruta: 440px;
+$separacion: 32px;
+
+// Bloque centrado: [lateral 330] [ruta 440] [comentarios 330] → la ruta queda en el centro
 .layout {
-  display: flex;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: $lateral minmax(0, 1fr);
+  gap: $separacion;
+  max-width: $lateral * 2 + $ruta + $separacion * 2 + 48px; // 48 = padding
   min-height: 100vh;
+  margin: 0 auto;
   padding: 24px;
 }
 
 .lateral {
-  width: 250px;
-  flex: none;
+  position: sticky;
+  top: 24px;
+  min-height: calc(100vh - 48px);
+  align-self: start;
   display: flex;
   flex-direction: column;
+  align-items: flex-end; // logo y menú pegados al contenido
+  gap: 16px;
+}
+
+// Logo + menú: un bloque pegado a la ruta, con el logo centrado sobre los botones
+.cabecera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 16px;
 }
 
 .logo {
-  align-self: flex-start;
   text-decoration: none;
   color: inherit;
 }
@@ -22,15 +40,20 @@
 .menu {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
 }
 
-.contenido {
-  flex: 1;
-  min-width: 0;
+.panel {
+  margin-top: auto; // la tarjeta de cada página va abajo
+  width: 100%;
 }
 
-@media (max-width: 800px) {
-  .layout { flex-direction: column; padding: 16px; }
-  .lateral { width: auto; }
+.contenido { min-width: 0; }
+
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: 1fr; max-width: none; }
+  .lateral { position: static; min-height: 0; align-items: flex-start; }
+  .cabecera { align-items: flex-start; }
+  .panel { margin-top: 0; }
 }

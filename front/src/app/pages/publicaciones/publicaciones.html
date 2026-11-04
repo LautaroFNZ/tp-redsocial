@@ -1,21 +1,38 @@
 @let pub = actual();
-<div class="ruta">
-  <aside class="tarjeta conductor">
-    <span class="etiqueta">AL VOLANTE</span>
-    <div class="quien">
-      <app-avatar [usuario]="pub.autor" />
-      <b>{{ pub.autor.nombre }} {{ pub.autor.apellido }}</b>
-    </div>
-    <app-patente [texto]="pub.autor.usuario" />
-    <p>{{ pub.autor.descripcion }}</p>
-    <!-- Sprint 5: llevará al garage de ese usuario. Por ahora va a Mi garage. -->
-    <a class="btn amarillo ancho" routerLink="/mi-perfil">Ver garage de {{ pub.autor.usuario }}</a>
-  </aside>
 
-  <div class="centro">
-    <app-publicacion-card [publicacion]="pub" [posicion]="indice() + 1" />
+<!-- Tarjeta que se dibuja en la columna izquierda del layout -->
+<ng-template #conductor>
+  @let p = actual();
+  <aside class="tarjeta conductor">
+    <span class="etiqueta">AL VOLANTE · KM {{ km() }}</span>
+    <div class="quien">
+      <app-avatar [usuario]="p.autor" [tamano]="50" />
+      <b>{{ p.autor.nombre }} {{ p.autor.apellido }}</b>
+    </div>
+    <app-patente [texto]="p.autor.usuario" />
+    <h2>{{ p.titulo }}</h2>
+    <p>{{ p.mensaje }}</p>
+    <span class="fecha">{{ p.fecha | date: 'dd/MM/yyyy HH:mm' }}</span>
+    <!-- Sprint 5: llevará al garage de ese usuario. Por ahora va a Mi garage. -->
+    <a class="btn amarillo ancho" routerLink="/mi-perfil">Ver garage de {{ p.autor.usuario }}</a>
+  </aside>
+</ng-template>
+
+<div class="ruta">
+  <div class="marco">
+    <div class="carretera" #carretera (scroll)="alScrollear()" tabindex="0"
+         aria-label="Ruta de publicaciones. Usá la rueda, las flechas o los pedales para avanzar.">
+      @for (p of lista(); track p.id; let i = $index) {
+        <div class="tramo">
+          <app-publicacion-card [publicacion]="p" [posicion]="i + 1" />
+        </div>
+      }
+    </div>
+
     <app-pedalera
+      class="pedalera"
       [orden]="orden()"
+      [presionado]="presionado()"
       [hayAnterior]="indice() > 0"
       [haySiguiente]="indice() < lista().length - 1"
       (embrague)="cambiarOrden()"
@@ -31,7 +48,7 @@
         <p>{{ c.texto }}</p>
       </div>
     } @empty {
-      <p class="vacio">Todavía nadie comentó. ¡Tocá bocina y sé el primero!</p>
+      <p class="vacio">Todavía nadie comentó. ¡Hacele luces y sé el primero!</p>
     }
     <input class="nuevo" placeholder="Escribí un comentario… (próximamente)" disabled
            aria-label="Escribir un comentario (próximamente)">

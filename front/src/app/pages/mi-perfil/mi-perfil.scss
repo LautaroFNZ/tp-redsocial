@@ -1,12 +1,4 @@
-.perfil {
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-}
-
 .ficha {
-  width: 250px;
-  flex: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -96,7 +88,14 @@
   .foto { height: 116px; border-radius: 8px 8px 0 0; overflow: hidden; }
   .info { padding: 6px 9px 8px; }
   h3 { font-size: 11px; line-height: 1.2; }
-  span { display: block; margin-top: 4px; font-size: 11px; font-weight: 700; }
+  .stats {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 700;
+  }
 }
 
 .ultima {
@@ -124,7 +123,5 @@
 }
 
 @media (max-width: 900px) {
-  .perfil { flex-direction: column; }
-  .ficha { width: 100%; }
   .cocheras { grid-template-columns: repeat(2, 1fr); }
 }

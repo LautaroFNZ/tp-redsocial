@@ -3,11 +3,11 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  padding: 18px 18px 10px;
+  padding: 16px 18px 8px;
   border: 4px solid var(--amarillo);
   border-radius: 16px;
   background: #17181B;
-  box-shadow: var(--sombra);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
 }
 
 .titulo {
@@ -25,7 +25,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   padding: 4px;
   border: none;
   border-radius: 10px;
@@ -34,20 +34,30 @@
   font: inherit;
   cursor: pointer;
 
-  svg { transition: transform 0.1s; }
-  &:active:not(:disabled) svg { transform: translateY(4px) scaleY(0.94); }
+  svg {
+    transform-origin: bottom;
+    transition: transform 0.12s, filter 0.12s;
+  }
+
+  // hundido: por click o por scroll
+  &.presionado svg,
+  &:active:not(:disabled) svg {
+    transform: translateY(4px) scaleY(0.88);
+    filter: drop-shadow(0 0 6px var(--color));
+  }
+
   &:focus-visible { outline: 3px solid var(--amarillo); }
   &:disabled { opacity: 0.35; cursor: not-allowed; }
 
-  b { font-family: var(--fuente-titulo); font-weight: 400; font-size: 11px; }
-  small { font-size: 11px; opacity: 0.8; }
+  b { font-family: var(--fuente-titulo); font-weight: 400; font-size: 10px; }
+  small { font-size: 10px; opacity: 0.8; }
 }
 
 .marcha {
-  padding: 2px 8px;
+  padding: 1px 7px;
   border: 2px solid #F28C28;
   border-radius: 12px;
   color: #F28C28;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
 }

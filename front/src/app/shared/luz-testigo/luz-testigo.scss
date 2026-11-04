@@ -1,0 +1,23 @@
+:host { display: inline-flex; }
+
+.luz {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  transition: color 0.2s;
+
+  svg { transition: filter 0.2s, opacity 0.2s; }
+
+  &.encendida svg { filter: drop-shadow(0 0 4px currentColor); }
+  &:not(.encendida) svg { opacity: 0.7; }
+}
+
+// círculo de tablero
+.marco {
+  width: calc(var(--tam) + 20px);
+  height: calc(var(--tam) + 20px);
+  border: 3px solid #3A3D43;
+  border-radius: 50%;
+  background: #0D0E10;
+}

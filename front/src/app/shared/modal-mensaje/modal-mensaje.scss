@@ -22,19 +22,7 @@
   p { margin: 8px 0 20px; font-size: 14px; line-height: 1.5; color: #4A4D55; }
 }
 
-.icono {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto;
-  border: 4px solid var(--negro);
-  border-radius: 50%;
-  background: var(--verde);
-  color: var(--blanco);
+.testigo {
   display: flex;
-  align-items: center;
   justify-content: center;
-  font-size: 24px;
-  font-weight: 700;
-
-  &.error { background: var(--rojo); }
 }
