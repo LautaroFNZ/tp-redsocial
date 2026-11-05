@@ -7,12 +7,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
+import { UsuariosModule } from '../usuarios/usuarios.module.js';
+import { ArchivosModule } from '../archivos/archivos.module.js';
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
     Module({
+        imports: [UsuariosModule, ArchivosModule],
         controllers: [AuthController],
-        providers: [AuthService]
+        providers: [AuthService],
     })
 ], AuthModule);
 export { AuthModule };

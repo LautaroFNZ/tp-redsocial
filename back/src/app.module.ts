@@ -6,6 +6,7 @@ import { AppService } from './app.service.js';
 import { UsuariosModule } from './usuarios/usuarios.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { PublicacionesModule } from './publicaciones/publicaciones.module.js';
+import { ArchivosModule } from './archivos/archivos.module.js';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PublicacionesModule } from './publicaciones/publicaciones.module.js';
     UsuariosModule,
     AuthModule,
     PublicacionesModule,
+    ArchivosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
