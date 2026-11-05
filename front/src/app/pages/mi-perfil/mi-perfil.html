@@ -1,31 +1,40 @@
+@let u = usuario();
+
 <!-- Ficha que se dibuja en la columna izquierda del layout -->
 <ng-template #ficha>
+  @let f = usuario();
   <aside class="tarjeta ficha">
-    <app-avatar [usuario]="usuario" [tamano]="92" />
-    <app-patente [texto]="usuario.usuario" />
+    <app-avatar [usuario]="f" [tamano]="92" />
+    <app-patente [texto]="f.usuario" />
     <dl>
       <dt>NOMBRE</dt>
-      <dd>{{ usuario.nombre }} {{ usuario.apellido }}</dd>
+      <dd>{{ f.nombre }} {{ f.apellido }}</dd>
       <dt>CORREO</dt>
-      <dd>{{ usuario.correo }}</dd>
+      <dd>{{ f.correo }}</dd>
       <dt>NACIMIENTO</dt>
-      <dd>{{ usuario.fechaNacimiento | date: 'dd/MM/yyyy' }}</dd>
+      <dd>{{ f.fechaNacimiento | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
       <dt>PERFIL</dt>
-      <dd>{{ usuario.perfil }}</dd>
+      <dd>{{ f.perfil }}</dd>
       <dt>DESCRIPCIÓN</dt>
-      <dd class="desc">{{ usuario.descripcion }}</dd>
+      <dd class="desc">{{ f.descripcion }}</dd>
     </dl>
   </aside>
 </ng-template>
 
 <section class="estacionamiento" aria-labelledby="titulo-garage">
   <header>
-    <h1 id="titulo-garage">El garage de {{ usuario.usuario }}</h1>
-    <span>{{ publicaciones.length }} autos estacionados</span>
+    <h1 id="titulo-garage">El garage de {{ u.usuario }}</h1>
+    <span>
+      @if (publicaciones().length) {
+        {{ publicaciones().length }} autos estacionados
+      } @else {
+        Todavía no estacionaste ningún auto
+      }
+    </span>
   </header>
 
   <div class="cocheras">
-    @for (p of publicaciones; track p.id; let i = $index) {
+    @for (p of publicaciones(); track p.id; let i = $index) {
       <div class="cochera">
         <span class="numero">cochera {{ i + 1 }}</span>
         <article class="auto">
@@ -41,7 +50,7 @@
         </article>
       </div>
     }
-    @for (l of libres; track $index) {
+    @for (l of libres(); track $index) {
       <div class="cochera libre"><span>LIBRE</span></div>
     }
   </div>

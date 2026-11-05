@@ -48,7 +48,13 @@
       }
     </div>
 
-    <button class="btn verde ancho" type="submit">▶ Arrancar</button>
+        <button class="btn verde ancho" type="submit" [disabled]="cargando()">
+      @if (cargando()) {
+        <app-luz-testigo tipo="bujia" [marco]="false" [tamano]="18" /> Precalentando…
+      } @else {
+        ▶ Arrancar
+      }
+    </button>
 
     <p class="pie">¿Todavía no tenés garage? <a routerLink="/registro">Sacá tu patente</a></p>
   </form>

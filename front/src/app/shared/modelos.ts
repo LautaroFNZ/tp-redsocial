@@ -1,4 +1,5 @@
 export interface Usuario {
+  _id?: string;
   nombre: string;
   apellido: string;
   correo: string;
@@ -7,6 +8,7 @@ export interface Usuario {
   descripcion: string;
   perfil: 'usuario' | 'administrador';
   foto?: string | null;
+  activo?: boolean;
 }
 
 export interface Comentario {

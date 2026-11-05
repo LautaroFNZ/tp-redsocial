@@ -5,18 +5,23 @@ import { Router, RouterLink } from '@angular/router';
 import { Patente } from '../../shared/patente/patente';
 import { Mensaje, ModalMensaje } from '../../shared/modal-mensaje/modal-mensaje';
 import { REGLAS_PASSWORD, coincidenPasswords, fechaPasada, passwordSegura } from '../../shared/validators';
+import { Auth } from '../../services/auth';
+import { LuzTestigo } from '../../shared/luz-testigo/luz-testigo';
+import { mensajeDeError } from '../../shared/mensaje-error';
 
 const MAX_FOTO_MB = 2;
 
 @Component({
   selector: 'app-registro',
-  imports: [ReactiveFormsModule, RouterLink, Patente, ModalMensaje],
+  imports: [ReactiveFormsModule, RouterLink, Patente, ModalMensaje, LuzTestigo],
   templateUrl: './registro.html',
   styleUrl: './registro.scss',
 })
 export class Registro {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private auth = inject(Auth);
+  cargando = signal(false);
 
   form = this.fb.nonNullable.group(
     {
@@ -122,12 +127,28 @@ export class Registro {
       return;
     }
 
-    // Sprint 1: todavía no hay back. Acá va el POST a /auth/registro
-    // con FormData (los datos del form + this.perfil + this.foto()).
-    this.modal.set({
-      tipo: 'ok',
-      titulo: '¡Patente lista!',
-      mensaje: `Tu garage ${this.form.getRawValue().usuario} quedó armado. Ahora ingresá con tus datos.`,
+    // FormData: los campos del form (menos repetirPassword) + la foto
+    const datos = new FormData();
+    for (const [campo, valor] of Object.entries(this.form.getRawValue())) {
+      if (campo !== 'repetirPassword') datos.append(campo, valor);
+    }
+    const foto = this.foto();
+    if (foto) datos.append('foto', foto);
+
+    this.cargando.set(true);
+    this.auth.registro(datos).subscribe({
+      next: usuario => {
+        this.cargando.set(false);
+        this.modal.set({
+          tipo: 'ok',
+          titulo: '¡Patente lista!',
+          mensaje: `Tu garage ${usuario.usuario} quedó armado. Ahora ingresá con tus datos.`,
+        });
+      },
+      error: error => {
+        this.cargando.set(false);
+        this.modal.set({ tipo: 'error', titulo: 'No pudimos registrarte', mensaje: mensajeDeError(error) });
+      },
     });
   }
 

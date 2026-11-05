@@ -82,7 +82,13 @@
 
     <div class="acciones">
       <p>¿Ya tenés garage? <a routerLink="/login">Entrá</a></p>
-      <button class="btn verde" type="submit">▶ Registrarme</button>
+            <button class="btn verde" type="submit" [disabled]="cargando()">
+        @if (cargando()) {
+          <app-luz-testigo tipo="bujia" [marco]="false" [tamano]="18" /> Precalentando…
+        } @else {
+          ▶ Registrarme
+        }
+      </button>
     </div>
   </form>
 </div>
