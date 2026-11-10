@@ -1,9 +1,9 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Usuario } from '../shared/modelos';
 
-@Injectable({ providedIn: 'root' })
+Service()
 export class Auth {
   private http = inject(HttpClient);
   private url = `${environment.apiUrl}/auth`;

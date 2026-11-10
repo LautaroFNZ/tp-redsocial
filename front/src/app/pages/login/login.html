@@ -14,13 +14,7 @@
       <input id="login-usuario" type="text" formControlName="usuario" autocomplete="username"
              [class.error]="mostrarError('usuario')">
       @if (mostrarError('usuario')) {
-        <p class="msg-error">
-          @if (form.controls.usuario.hasError('required')) {
-            Ingresá tu correo o nombre de usuario.
-          } @else {
-            Debe tener al menos 3 caracteres.
-          }
-        </p>
+        <p class="msg-error">Ingresá tu correo o nombre de usuario.</p>
       }
     </div>
 
@@ -35,6 +29,10 @@
           {{ verPassword() ? 'OCULTAR' : 'VER' }}
         </button>
       </div>
+      @if (mostrarError('password')) {
+        <p class="msg-error">Ingresá tu contraseña.</p>
+      }
+    </div>
 
       @let password = form.controls.password;
       @if (password.dirty || enviado()) {

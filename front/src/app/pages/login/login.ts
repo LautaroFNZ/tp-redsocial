@@ -6,8 +6,8 @@ import { Sesion } from '../../services/sesion';
 import { Patente } from '../../shared/patente/patente';
 import { LuzTestigo } from '../../shared/luz-testigo/luz-testigo';
 import { Mensaje, ModalMensaje } from '../../shared/modal-mensaje/modal-mensaje';
-import { REGLAS_PASSWORD, passwordSegura } from '../../shared/validators';
 import { mensajeDeError } from '../../shared/mensaje-error';
+
 
 @Component({
   selector: 'app-login',
@@ -21,12 +21,12 @@ export class Login {
   private auth = inject(Auth);
   private sesion = inject(Sesion);
 
+  // En el login solo se pide que no estén vacíos: no se dan pistas sobre la contraseña
   form = this.fb.nonNullable.group({
-    usuario: ['', [Validators.required, Validators.minLength(3)]],
-    password: ['', [Validators.required, passwordSegura]],
+    usuario: ['', Validators.required],
+    password: ['', Validators.required],
   });
 
-  reglas = REGLAS_PASSWORD;
   verPassword = signal(false);
   enviado = signal(false);
   cargando = signal(false);
@@ -44,11 +44,12 @@ export class Login {
       this.form.markAllAsTouched();
       this.modal.set({
         tipo: 'error',
-        titulo: 'Revisá los datos',
-        mensaje: 'Hay campos con errores. Corregilos y volvé a intentar.',
+        titulo: 'Faltan datos',
+        mensaje: 'Completá tu usuario o correo y tu contraseña.',
       });
       return;
     }
+
 
     this.cargando.set(true);
     this.auth.login(this.form.getRawValue()).subscribe({

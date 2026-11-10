@@ -4,7 +4,10 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Patente } from '../../shared/patente/patente';
 import { Mensaje, ModalMensaje } from '../../shared/modal-mensaje/modal-mensaje';
-import { REGLAS_PASSWORD, coincidenPasswords, fechaPasada, passwordSegura } from '../../shared/validators';
+import {
+  EDAD_MINIMA, PATRON_CORREO, PATRON_NOMBRE, REGLAS_PASSWORD,
+  coincidenPasswords, edadPermitida, passwordSegura,
+} from '../../shared/validators';
 import { Auth } from '../../services/auth';
 import { LuzTestigo } from '../../shared/luz-testigo/luz-testigo';
 import { mensajeDeError } from '../../shared/mensaje-error';
@@ -24,18 +27,20 @@ export class Registro {
   cargando = signal(false);
 
   form = this.fb.nonNullable.group(
-    {
-      nombre: ['', [Validators.required, Validators.maxLength(50)]],
-      apellido: ['', [Validators.required, Validators.maxLength(50)]],
-      correo: ['', [Validators.required, Validators.email]],
+  {
+      nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50),
+                    Validators.pattern(PATRON_NOMBRE)]],
+      apellido: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50),
+                      Validators.pattern(PATRON_NOMBRE)]],
+      correo: ['', [Validators.required, Validators.email, Validators.pattern(PATRON_CORREO)]],
       usuario: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15),
                      Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
       password: ['', [Validators.required, passwordSegura]],
       repetirPassword: ['', Validators.required],
-      fechaNacimiento: ['', [Validators.required, fechaPasada]],
-      descripcion: ['', [Validators.required, Validators.maxLength(200)]],
-    },
-    { validators: coincidenPasswords },
+      fechaNacimiento: ['', [Validators.required, edadPermitida]],
+      descripcion: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(200)]],
+  },
+  { validators: coincidenPasswords },
   );
 
   // Los campos de texto simples se dibujan con un @for
@@ -74,21 +79,39 @@ export class Registro {
     });
   }
 
+   private visible(campo: keyof typeof this.form.controls): boolean {
+    const c = this.form.controls[campo];
+    return c.dirty || c.touched || this.enviado();
+  }
+
   error(campo: keyof typeof this.form.controls): string | null {
     const c = this.form.controls[campo];
-    if (!c.invalid || !(c.touched || this.enviado())) return null;
+    if (!c.invalid || !this.visible(campo)) return null;
+
     if (c.hasError('required')) return 'Este campo es obligatorio.';
-    if (c.hasError('email')) return 'Ingresá un correo válido.';
     if (c.hasError('minlength')) return `Mínimo ${c.getError('minlength').requiredLength} caracteres.`;
     if (c.hasError('maxlength')) return `Máximo ${c.getError('maxlength').requiredLength} caracteres.`;
-    if (c.hasError('pattern')) return 'Solo letras, números y guion bajo.';
+
+    if (c.hasError('email') || (campo === 'correo' && c.hasError('pattern'))) {
+      return 'Ingresá un correo válido, por ejemplo nombre@mail.com.';
+    }
+    if (c.hasError('pattern')) {
+      return campo === 'usuario'
+        ? 'Solo letras, números y guion bajo, sin espacios.'
+        : 'Solo letras, espacios, apóstrofe o guion.';
+    }
+
+    if (c.hasError('fechaInvalida')) return 'La fecha no es válida.';
     if (c.hasError('fechaFutura')) return 'La fecha no puede ser futura.';
+    if (c.hasError('menorDeEdad')) return `Tenés que tener al menos ${EDAD_MINIMA} años.`;
+    if (c.hasError('edadMaxima')) return 'Revisá el año de nacimiento.';
+
     return 'Revisá este campo.';
   }
 
   errorRepetir(): string | null {
     const c = this.form.controls.repetirPassword;
-    if (!(c.touched || this.enviado())) return null;
+    if (!this.visible('repetirPassword')) return null;
     if (c.hasError('required')) return 'Repetí la contraseña.';
     if (this.form.hasError('noCoinciden')) return 'Las contraseñas no coinciden.';
     return null;

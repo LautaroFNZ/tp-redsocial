@@ -1,10 +1,21 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
 import { UsuariosService } from '../usuarios/usuarios.service.js';
 import { FileService } from '../archivos/file.service.js';
 import { RegistroDto } from './dto/registro.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 
+const EDAD_MINIMA = 13;
+const EDAD_MAXIMA = 100;
+
+function calcularEdad(nacimiento: Date, hoy = new Date()): number {
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+  const mes = hoy.getMonth() - nacimiento.getMonth();
+  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
+  return edad;
+}
+
+// En NestJS los servicios se declaran con @Injectable() (no existe @Service(), que es de Angular)
 @Injectable()
 export class AuthService {
   constructor(
@@ -13,6 +24,19 @@ export class AuthService {
   ) {}
 
   async registro(dto: RegistroDto, foto?: Express.Multer.File) {
+    // 0. Fecha de nacimiento: no futura y edad permitida (si no, 400)
+    const nacimiento = new Date(dto.fechaNacimiento);
+    if (nacimiento > new Date()) {
+      throw new BadRequestException('La fecha de nacimiento no puede ser futura.');
+    }
+    const edad = calcularEdad(nacimiento);
+    if (edad < EDAD_MINIMA) {
+      throw new BadRequestException(`Tenés que tener al menos ${EDAD_MINIMA} años.`);
+    }
+    if (edad > EDAD_MAXIMA) {
+      throw new BadRequestException('Revisá el año de nacimiento.');
+    }
+
     // 1. Correo y usuario únicos (si no, 409)
     await this.usuariosService.verificarDisponible(dto.correo, dto.usuario);
 
@@ -25,7 +49,7 @@ export class AuthService {
     // 4. Guardar. El perfil siempre arranca como "usuario"
     return this.usuariosService.crear({
       ...dto,
-      fechaNacimiento: new Date(dto.fechaNacimiento),
+      fechaNacimiento: nacimiento,
       password,
       foto: fotoUrl,
       perfil: 'usuario',

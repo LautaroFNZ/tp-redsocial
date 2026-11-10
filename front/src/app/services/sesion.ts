@@ -1,11 +1,11 @@
-import { Injectable, signal } from '@angular/core';
+import { Service, signal } from '@angular/core';
 import { Usuario } from '../shared/modelos';
 
 const CLAVE = 'garagehub.usuario';
 
 // Sprint 1: guarda los datos públicos del usuario que devolvió el login.
 // Sprint 3: se reemplaza por el JWT en cookie.
-@Injectable({ providedIn: 'root' })
+Service()
 export class Sesion {
   private actual = signal<Usuario | null>(this.leer());
   usuario = this.actual.asReadonly();
