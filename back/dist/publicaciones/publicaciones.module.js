@@ -5,14 +5,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { PublicacionesController } from './publicaciones.controller.js';
 import { PublicacionesService } from './publicaciones.service.js';
+import { Publicacion, PublicacionSchema } from './schemas/publicacion.schema.js';
+import { UsuariosModule } from '../usuarios/usuarios.module.js';
+import { ArchivosModule } from '../archivos/archivos.module.js';
 let PublicacionesModule = class PublicacionesModule {
 };
 PublicacionesModule = __decorate([
     Module({
+        imports: [
+            MongooseModule.forFeature([{ name: Publicacion.name, schema: PublicacionSchema }]),
+            UsuariosModule,
+            ArchivosModule,
+        ],
         controllers: [PublicacionesController],
-        providers: [PublicacionesService]
+        providers: [PublicacionesService],
     })
 ], PublicacionesModule);
 export { PublicacionesModule };

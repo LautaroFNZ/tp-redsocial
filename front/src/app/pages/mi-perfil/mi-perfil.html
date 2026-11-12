@@ -1,57 +1,92 @@
-@let u = usuario();
-
-<!-- Ficha que se dibuja en la columna izquierda del layout -->
+<!-- Ficha de la columna izquierda -->
 <ng-template #ficha>
-  @let f = usuario();
-  <aside class="tarjeta ficha">
-    <app-avatar [usuario]="f" [tamano]="92" />
-    <app-patente [texto]="f.usuario" />
-    <dl>
-      <dt>NOMBRE</dt>
-      <dd>{{ f.nombre }} {{ f.apellido }}</dd>
-      <dt>CORREO</dt>
-      <dd>{{ f.correo }}</dd>
-      <dt>NACIMIENTO</dt>
-      <dd>{{ f.fechaNacimiento | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
-      <dt>PERFIL</dt>
-      <dd>{{ f.perfil }}</dd>
-      <dt>DESCRIPCIÓN</dt>
-      <dd class="desc">{{ f.descripcion }}</dd>
-    </dl>
-  </aside>
+  @if (duenio(); as f) {
+    <aside class="tarjeta ficha">
+      <app-avatar [usuario]="f" [tamano]="92" />
+      <app-patente [texto]="f.usuario" />
+      <dl>
+        <dt>NOMBRE</dt>
+        <dd>{{ f.nombre }} {{ f.apellido }}</dd>
+        @if (esPropio()) {
+          <dt>CORREO</dt>
+          <dd>{{ f.correo }}</dd>
+          <dt>NACIMIENTO</dt>
+          <dd>{{ f.fechaNacimiento | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
+        }
+        <dt>PERFIL</dt>
+        <dd>{{ f.perfil }}</dd>
+        <dt>DESCRIPCIÓN</dt>
+        <dd class="desc">{{ f.descripcion }}</dd>
+      </dl>
+    </aside>
+  }
 </ng-template>
 
-<section class="estacionamiento" aria-labelledby="titulo-garage">
-  <header>
-    <h1 id="titulo-garage">El garage de {{ u.usuario }}</h1>
-    <span>
-      @if (publicaciones().length) {
-        {{ publicaciones().length }} autos estacionados
-      } @else {
-        Todavía no estacionaste ningún auto
-      }
-    </span>
-  </header>
-
-  <div class="cocheras">
-    @for (p of publicaciones(); track p.id; let i = $index) {
-      <div class="cochera">
-        <span class="numero">cochera {{ i + 1 }}</span>
-        <article class="auto">
-          @if (i === 0) { <span class="ultima">LA ÚLTIMA</span> }
-          <div class="foto"><app-foto-auto [imagen]="p.imagen" [alt]="p.titulo" /></div>
-          <div class="info">
-            <h3>{{ p.titulo }}</h3>
-            <span class="stats">
-              <app-luz-testigo tipo="luces" [marco]="false" [tamano]="14" /> {{ p.meGusta }}
-              · 💬 {{ p.comentarios.length }}
-            </span>
-          </div>
-        </article>
-      </div>
-    }
-    @for (l of libres(); track $index) {
-      <div class="cochera libre"><span>LIBRE</span></div>
-    }
+@if (necesitaSesion()) {
+  <app-sin-sesion mensaje="Para ver tu garage necesitás iniciar sesión." />
+} @else if (noEncontrado()) {
+  <div class="tarjeta no-encontrado">
+    <app-luz-testigo tipo="motor" [tamano]="42" />
+    <h2>Garage no encontrado</h2>
+    <p>No existe un garage de "{{ buscado() }}".</p>
+    <a class="btn amarillo" routerLink="/publicaciones">Volver a la ruta</a>
   </div>
-</section>
+} @else if (duenio(); as u) {
+  <section class="estacionamiento" aria-labelledby="titulo-garage">
+    <header>
+      <h1 id="titulo-garage">{{ esPropio() ? 'Tu garage' : 'El garage de ' + u.usuario }}</h1>
+      <span>
+        @if (cargando()) {
+          Abriendo el portón…
+        } @else if (total()) {
+          Últimos 3 de {{ total() }} autos estacionados
+        } @else {
+          {{ esPropio() ? 'Todavía no estacionaste ningún auto' : 'Todavía no estacionó ningún auto' }}
+        }
+      </span>
+    </header>
+
+    <div class="cocheras">
+      @for (p of publicaciones(); track p._id; let i = $index) {
+        <div class="cochera">
+          <span class="numero">cochera {{ i + 1 }}</span>
+          <article class="auto">
+            @if (i === 0) { <span class="ultima">LA ÚLTIMA</span> }
+            <div class="foto"><app-foto-auto [imagen]="p.imagen" [alt]="p.titulo" /></div>
+            <div class="info">
+              <h3>{{ p.titulo }}</h3>
+              <span class="stats">
+                <app-luz-testigo tipo="luces" [marco]="false" [tamano]="14" /> {{ p.cantidadMeGusta }}
+              </span>
+              <!-- Sprint 3: acá se listan los comentarios -->
+              <span class="sin-comentarios">💬 Sin comentarios todavía</span>
+              @if (puedeBorrar()) {
+                <button class="sacar" type="button" (click)="aBorrar.set(p)"
+                        [attr.aria-label]="'Sacar ' + p.titulo + ' del garage'">
+                  <app-luz-testigo tipo="mano" [marco]="false" [tamano]="14" /> Sacar
+                </button>
+              }
+            </div>
+          </article>
+        </div>
+      }
+      @for (l of libres(); track $index) {
+        <div class="cochera libre"><span>LIBRE</span></div>
+      }
+    </div>
+  </section>
+}
+
+@if (modal(); as m) {
+  <app-modal-mensaje [titulo]="m.titulo" [mensaje]="m.mensaje" [tipo]="m.tipo" (cerrar)="modal.set(null)" />
+}
+
+@if (aBorrar(); as b) {
+  <app-modal-mensaje
+    tipo="peligro"
+    titulo="¿Sacás este auto del garage?"
+    [mensaje]="'“' + b.titulo + '” deja de aparecer en la ruta y en el garage. No se puede deshacer.'"
+    textoConfirmar="Sí, sacarlo"
+    (cerrar)="aBorrar.set(null)"
+    (confirmar)="confirmarBorrado()" />
+}

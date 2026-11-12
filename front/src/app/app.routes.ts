@@ -25,8 +25,18 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/publicaciones/publicaciones').then(m => m.Publicaciones),
       },
       {
+        path: 'publicar',
+        title: 'Publicar · GarageHub',
+        loadComponent: () => import('./pages/publicar/publicar').then(m => m.Publicar),
+      },
+      {
         path: 'mi-perfil',
         title: 'Mi garage · GarageHub',
+        loadComponent: () => import('./pages/mi-perfil/mi-perfil').then(m => m.MiPerfil),
+      },
+      {
+        path: 'garage/:usuario',
+        title: 'Garage · GarageHub',
         loadComponent: () => import('./pages/mi-perfil/mi-perfil').then(m => m.MiPerfil),
       },
     ],

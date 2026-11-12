@@ -1,4 +1,4 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { Publicacion } from '../../shared/modelos';
 import { FotoAuto } from '../../shared/foto-auto/foto-auto';
 import { LuzTestigo } from '../../shared/luz-testigo/luz-testigo';
@@ -12,14 +12,14 @@ import { LuzTestigo } from '../../shared/luz-testigo/luz-testigo';
 export class PublicacionCard {
   publicacion = input.required<Publicacion>();
   posicion = input(1);
+  usuarioId = input<string | null>(null); // usuario logueado
+  procesando = input(false);              // mientras se guarda el me gusta
+
+  luces = output<void>(); // el padre llama al back
 
   km = computed(() => String(this.posicion()).padStart(3, '0'));
-
-  // Sprint 1: solo visual. Sprint 2: POST / DELETE del me gusta.
-  leGusta = signal(false);
-  luces = computed(() => this.publicacion().meGusta + (this.leGusta() ? 1 : 0));
-
-  alternarLuces() {
-    this.leGusta.update(v => !v);
-  }
+  leGusta = computed(() => {
+    const id = this.usuarioId();
+    return !!id && this.publicacion().meGusta.includes(id);
+  });
 }

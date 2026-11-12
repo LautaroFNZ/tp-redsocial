@@ -1,0 +1,124 @@
+$ancho-ruta: 440px;
+
+.publicar {
+  display: grid;
+  grid-template-columns: $ancho-ruta minmax(0, 330px);
+  gap: 32px;
+  align-items: start;
+}
+
+// ---------- tarjeta de la izquierda ----------
+.autor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  h2 { font-size: 14px; line-height: 1.2; margin-top: 4px; overflow-wrap: anywhere; }
+  p { margin: 0; font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; }
+}
+
+.etiqueta { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--gris); }
+.quien { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+.nota { font-size: 11px; color: var(--gris); }
+
+// ---------- la ruta (igual a la de publicaciones, sin scroll) ----------
+.marco {
+  position: relative;
+  height: 100vh;
+  margin: -24px 0;
+  background: #1B1C20;
+  box-shadow: inset 0 0 0 4px #121316;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: var(--amarillo);
+  }
+  &::before { left: 14px; }
+  &::after { right: 14px; }
+}
+
+.asfalto {
+  height: 100%;
+  padding: 24px 46px;
+  background-image:
+    repeating-linear-gradient(180deg, var(--blanco) 0 42px, transparent 42px 84px),
+    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.5px);
+  background-size: 6px 84px, 7px 7px;
+  background-position: center top, 0 0;
+  background-repeat: repeat-y, repeat;
+}
+
+.previa {
+  position: relative;
+  height: calc(100vh - 230px);
+  padding: 4px;
+  border: 5px dashed var(--amarillo);
+  border-radius: 28px;
+
+  app-publicacion-card { pointer-events: none; } // es solo para mirar
+}
+
+.etiqueta-previa {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: var(--amarillo);
+  font-family: var(--fuente-titulo);
+  font-size: 11px;
+}
+
+.aclaracion {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--blanco);
+  opacity: 0.85;
+}
+
+// ---------- formulario ----------
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+
+  h2 { font-size: 20px; }
+}
+
+.ayuda { margin: -8px 0 4px; font-size: 13px; color: #6A6D74; }
+.contador { margin: 0; text-align: right; font-size: 11px; color: var(--gris); }
+.etiqueta-campo { font-size: 12px; font-weight: 700; }
+
+.elegir-foto {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 14px;
+  border: 3px dashed var(--negro);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+
+  small { font-weight: 400; font-size: 11px; color: var(--gris); }
+  input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  &:focus-within { outline: 3px solid var(--amarillo); outline-offset: 3px; }
+}
+
+@media (max-width: 800px) {
+  .publicar { display: flex; flex-direction: column; }
+  .marco { width: 100%; height: 80vh; margin: 0; }
+  .previa { height: calc(80vh - 100px); }
+}

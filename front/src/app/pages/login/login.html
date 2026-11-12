@@ -34,19 +34,7 @@
       }
     </div>
 
-      @let password = form.controls.password;
-      @if (password.dirty || enviado()) {
-        <ul class="reglas">
-          @for (regla of reglas; track regla.error) {
-            <li [class.ok]="!password.hasError(regla.error)">
-              {{ password.hasError(regla.error) ? '✕' : '✓' }} {{ regla.texto }}
-            </li>
-          }
-        </ul>
-      }
-    </div>
-
-        <button class="btn verde ancho" type="submit" [disabled]="cargando()">
+    <button class="btn verde ancho" type="submit" [disabled]="cargando()">
       @if (cargando()) {
         <app-luz-testigo tipo="bujia" [marco]="false" [tamano]="18" /> Precalentando…
       } @else {

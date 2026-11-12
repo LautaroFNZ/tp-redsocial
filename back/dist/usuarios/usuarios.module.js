@@ -7,12 +7,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsuariosService } from './usuarios.service.js';
+import { UsuariosController } from './usuarios.controller.js';
 import { Usuario, UsuarioSchema } from './schemas/usuario.schema.js';
 let UsuariosModule = class UsuariosModule {
 };
 UsuariosModule = __decorate([
     Module({
         imports: [MongooseModule.forFeature([{ name: Usuario.name, schema: UsuarioSchema }])],
+        controllers: [UsuariosController],
         providers: [UsuariosService],
         exports: [UsuariosService],
     })

@@ -52,3 +52,7 @@ export const edadPermitida: ValidatorFn = (control) => {
   if (edad > EDAD_MAXIMA) return { edadMaxima: { maxima: EDAD_MAXIMA } };
   return null;
 };
+
+// ---------- Texto con contenido (no solo espacios) ----------
+export const conContenido: ValidatorFn = (control) =>
+  !control.value || String(control.value).trim() ? null : { soloEspacios: true };

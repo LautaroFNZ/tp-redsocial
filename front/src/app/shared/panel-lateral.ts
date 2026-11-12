@@ -1,7 +1,7 @@
-import { Injectable, TemplateRef, signal } from '@angular/core';
+import { Service, TemplateRef, signal } from '@angular/core';
 
 // Permite que cada página ponga su propia tarjeta abajo del menú lateral
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PanelLateral {
   contenido = signal<TemplateRef<unknown> | null>(null);
 }

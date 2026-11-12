@@ -1,5 +1,5 @@
 export interface Usuario {
-  _id?: string;
+  _id: string;
   nombre: string;
   apellido: string;
   correo: string;
@@ -11,18 +11,28 @@ export interface Usuario {
   activo?: boolean;
 }
 
-export interface Comentario {
-  autor: string;
-  texto: string;
-}
+// Datos del autor que el back devuelve con cada publicación (populate)
+export type Autor = Pick<Usuario, '_id' | 'nombre' | 'apellido' | 'usuario' | 'descripcion' | 'perfil' | 'foto'>;
 
 export interface Publicacion {
-  id: number;
-  autor: Usuario;
+  _id: string;
   titulo: string;
   mensaje: string;
-  imagen?: string | null;
-  fecha: string;
-  meGusta: number;
-  comentarios: Comentario[];
+  imagen: string | null;
+  autor: Autor;
+  meGusta: string[];        // ids de quienes le hicieron luces
+  cantidadMeGusta: number;
+  activa: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
+
+// Respuesta de GET /publicaciones
+export interface PaginaPublicaciones {
+  publicaciones: Publicacion[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+export type Orden = 'fecha' | 'meGusta';

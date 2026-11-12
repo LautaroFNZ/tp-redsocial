@@ -7,10 +7,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
 import { UsuariosService } from '../usuarios/usuarios.service.js';
 import { FileService } from '../archivos/file.service.js';
+const EDAD_MINIMA = 13;
+const EDAD_MAXIMA = 100;
+function calcularEdad(nacimiento, hoy = new Date()) {
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const mes = hoy.getMonth() - nacimiento.getMonth();
+    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate()))
+        edad--;
+    return edad;
+}
 let AuthService = class AuthService {
     usuariosService;
     fileService;
@@ -19,12 +28,23 @@ let AuthService = class AuthService {
         this.fileService = fileService;
     }
     async registro(dto, foto) {
+        const nacimiento = new Date(dto.fechaNacimiento);
+        if (nacimiento > new Date()) {
+            throw new BadRequestException('La fecha de nacimiento no puede ser futura.');
+        }
+        const edad = calcularEdad(nacimiento);
+        if (edad < EDAD_MINIMA) {
+            throw new BadRequestException(`Tenés que tener al menos ${EDAD_MINIMA} años.`);
+        }
+        if (edad > EDAD_MAXIMA) {
+            throw new BadRequestException('Revisá el año de nacimiento.');
+        }
         await this.usuariosService.verificarDisponible(dto.correo, dto.usuario);
         const fotoUrl = foto ? await this.fileService.cloudinaryUploader(foto) : null;
         const password = await bcrypt.hash(dto.password, 10);
         return this.usuariosService.crear({
             ...dto,
-            fechaNacimiento: new Date(dto.fechaNacimiento),
+            fechaNacimiento: nacimiento,
             password,
             foto: fotoUrl,
             perfil: 'usuario',

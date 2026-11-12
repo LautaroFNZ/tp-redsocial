@@ -2,10 +2,18 @@
   <div class="caja" role="dialog" aria-modal="true" aria-labelledby="modal-titulo"
        (click)="$event.stopPropagation()">
     <div class="testigo">
-      <app-luz-testigo [tipo]="tipo() === 'error' ? 'motor' : 'posicion'" [tamano]="42" />
+      <app-luz-testigo [tipo]="luz()" [tamano]="42" />
     </div>
     <h2 id="modal-titulo">{{ titulo() }}</h2>
     <p>{{ mensaje() }}</p>
-    <button class="btn amarillo" type="button" (click)="cerrar.emit()" autofocus>Entendido</button>
+
+    @if (tipo() === 'peligro') {
+      <div class="botones">
+        <button class="btn" type="button" (click)="cerrar.emit()" autofocus>Cancelar</button>
+        <button class="btn rojo" type="button" (click)="confirmar.emit()">{{ textoConfirmar() }}</button>
+      </div>
+    } @else {
+      <button class="btn amarillo" type="button" (click)="cerrar.emit()" autofocus>Entendido</button>
+    }
   </div>
 </div>

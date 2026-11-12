@@ -37,4 +37,16 @@ export class UsuariosService {
       .select('+password')
       .exec();
   }
+
+  buscarPorId(id: string) {
+    return this.usuarioModel.findById(id).exec();
+  }
+  
+  // Datos públicos de un garage (sin correo, fecha de nacimiento ni contraseña)
+  buscarPublico(usuario: string) {
+    return this.usuarioModel
+      .findOne({ usuario: usuario.trim().toLowerCase(), activo: true })
+      .select('nombre apellido usuario foto descripcion perfil')
+      .exec();
+  }
 }

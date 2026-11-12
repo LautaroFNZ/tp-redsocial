@@ -40,6 +40,15 @@ let UsuariosService = class UsuariosService {
             .select('+password')
             .exec();
     }
+    buscarPorId(id) {
+        return this.usuarioModel.findById(id).exec();
+    }
+    buscarPublico(usuario) {
+        return this.usuarioModel
+            .findOne({ usuario: usuario.trim().toLowerCase(), activo: true })
+            .select('nombre apellido usuario foto descripcion perfil')
+            .exec();
+    }
 };
 UsuariosService = __decorate([
     Injectable(),

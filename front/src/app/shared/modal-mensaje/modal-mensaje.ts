@@ -1,11 +1,20 @@
-import { Component, input, output } from '@angular/core';
-import { LuzTestigo } from '../luz-testigo/luz-testigo';
+import { Component, computed, input, output } from '@angular/core';
+import { LuzTestigo, TipoLuz } from '../luz-testigo/luz-testigo';
+
+export type TipoMensaje = 'ok' | 'error' | 'peligro' | 'sesion';
 
 export interface Mensaje {
   titulo: string;
   mensaje: string;
-  tipo: 'ok' | 'error';
+  tipo: TipoMensaje;
 }
+
+const LUCES: Record<TipoMensaje, TipoLuz> = {
+  ok: 'posicion',   // éxito
+  error: 'motor',   // check engine
+  peligro: 'mano',  // freno de mano: confirmar algo que no se deshace
+  sesion: 'cinturon', // hace falta iniciar sesión
+};
 
 @Component({
   selector: 'app-modal-mensaje',
@@ -17,6 +26,11 @@ export interface Mensaje {
 export class ModalMensaje {
   titulo = input.required<string>();
   mensaje = input.required<string>();
-  tipo = input<'ok' | 'error'>('ok');
+  tipo = input<TipoMensaje>('ok');
+  textoConfirmar = input('Confirmar');
+
   cerrar = output<void>();
+  confirmar = output<void>();
+
+  luz = computed(() => LUCES[this.tipo()]);
 }

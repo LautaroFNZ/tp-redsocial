@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Usuario } from '../shared/modelos';
 
-Service()
+@Service()
 export class Auth {
   private http = inject(HttpClient);
   private url = `${environment.apiUrl}/auth`;

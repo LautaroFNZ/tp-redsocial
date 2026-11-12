@@ -26,3 +26,16 @@
   display: flex;
   justify-content: center;
 }
+
+.botones {
+  display: flex;
+  gap: 10px;
+
+  .btn { flex: 1; }
+}
+
+.btn.rojo {
+  background: var(--rojo);
+  color: var(--blanco);
+  border-color: var(--negro);
+}

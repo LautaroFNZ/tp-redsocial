@@ -1,0 +1,79 @@
+<!-- Tarjeta de la columna izquierda: "Vas a publicar como" -->
+<ng-template #autor>
+  @if (vistaPrevia(); as v) {
+    <aside class="tarjeta autor">
+      <span class="etiqueta">VAS A PUBLICAR COMO</span>
+      <div class="quien">
+        <app-avatar [usuario]="v.autor" [tamano]="50" />
+        <b>{{ v.autor.nombre }} {{ v.autor.apellido }}</b>
+      </div>
+      <app-patente [texto]="v.autor.usuario" />
+      <h2>{{ v.titulo }}</h2>
+      <p>{{ v.mensaje }}</p>
+      <span class="nota">Vista previa: así se ve en "Al volante"</span>
+    </aside>
+  }
+</ng-template>
+
+@if (sesion.usuario()) {
+  <div class="publicar">
+    <!-- Centro: la publicación sobre la ruta -->
+    <div class="marco">
+      <div class="asfalto">
+        <div class="previa">
+          <span class="etiqueta-previa">VISTA PREVIA</span>
+          @if (vistaPrevia(); as v) {
+            <app-publicacion-card [publicacion]="v" [posicion]="1" />
+          }
+        </div>
+        <p class="aclaracion">Así va a aparecer en la ruta.</p>
+      </div>
+    </div>
+
+    <!-- Derecha: el formulario -->
+    <form class="tarjeta formulario" [formGroup]="form" (ngSubmit)="publicar()" novalidate>
+      <h2>Sacá el auto a la ruta</h2>
+      <p class="ayuda">Contá qué hiciste con tu fierro.</p>
+
+      <div class="campo">
+        <label for="pub-titulo">Título</label>
+        <input id="pub-titulo" type="text" formControlName="titulo" maxlength="80"
+               [class.error]="error('titulo')">
+        <p class="contador">{{ largoTitulo() }} / 80</p>
+        @if (error('titulo'); as e) { <p class="msg-error">{{ e }}</p> }
+      </div>
+
+      <div class="campo">
+        <label for="pub-mensaje">Mensaje</label>
+        <textarea id="pub-mensaje" formControlName="mensaje" maxlength="500" rows="5"
+                  [class.error]="error('mensaje')"></textarea>
+        <p class="contador">{{ largoMensaje() }} / 500</p>
+        @if (error('mensaje'); as e) { <p class="msg-error">{{ e }}</p> }
+      </div>
+
+      <div class="campo">
+        <span class="etiqueta-campo">Foto (opcional)</span>
+        <label class="elegir-foto">
+          📷 {{ imagen() ? imagen()!.name + ' · cambiar' : 'Elegir foto' }}
+          <small>JPG o PNG, hasta 4 MB</small>
+          <input type="file" accept="image/*" (change)="elegirImagen($event)">
+        </label>
+        @if (errorImagen(); as e) { <p class="msg-error">{{ e }}</p> }
+      </div>
+
+      <button class="btn verde ancho" type="submit" [disabled]="cargando()">
+        @if (cargando()) {
+          <app-luz-testigo tipo="bujia" [marco]="false" [tamano]="18" /> Precalentando…
+        } @else {
+          ▶ Publicar
+        }
+      </button>
+    </form>
+  </div>
+} @else {
+  <app-sin-sesion mensaje="Para publicar necesitás iniciar sesión." />
+}
+
+@if (modal(); as m) {
+  <app-modal-mensaje [titulo]="m.titulo" [mensaje]="m.mensaje" [tipo]="m.tipo" (cerrar)="cerrarModal()" />
+}

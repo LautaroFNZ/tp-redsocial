@@ -1,20 +1,38 @@
-@let pub = actual();
-
-<!-- Tarjeta que se dibuja en la columna izquierda del layout -->
+<!-- Tarjeta de la columna izquierda -->
 <ng-template #conductor>
   @let p = actual();
   <aside class="tarjeta conductor">
-    <span class="etiqueta">AL VOLANTE · KM {{ km() }}</span>
-    <div class="quien">
-      <app-avatar [usuario]="p.autor" [tamano]="50" />
-      <b>{{ p.autor.nombre }} {{ p.autor.apellido }}</b>
-    </div>
-    <app-patente [texto]="p.autor.usuario" />
-    <h2>{{ p.titulo }}</h2>
-    <p>{{ p.mensaje }}</p>
-    <span class="fecha">{{ p.fecha | date: 'dd/MM/yyyy HH:mm' }}</span>
-    <!-- Sprint 5: llevará al garage de ese usuario. Por ahora va a Mi garage. -->
-    <a class="btn amarillo ancho" routerLink="/mi-perfil">Ver garage de {{ p.autor.usuario }}</a>
+    @if (p) {
+      <span class="etiqueta">AL VOLANTE · KM {{ km() }}</span>
+      <div class="quien">
+        <app-avatar [usuario]="p.autor" [tamano]="50" />
+        <b>{{ p.autor.nombre }} {{ p.autor.apellido }}</b>
+      </div>
+      <app-patente [texto]="p.autor.usuario" />
+      <h2>{{ p.titulo }}</h2>
+      <p>{{ p.mensaje }}</p>
+      <span class="fecha">{{ p.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+      <!-- Sprint 5: llevará al garage de ese usuario -->
+      <a class="btn amarillo ancho"
+         [routerLink]="p.autor._id === usuarioId() ? ['/mi-perfil'] : ['/garage', p.autor.usuario]">
+        Ver garage de {{ p.autor.usuario }}
+      </a>
+      @if (puedeBorrar(p)) {
+        <button class="btn ancho sacar" type="button" (click)="aBorrar.set(p)">
+          <app-luz-testigo tipo="mano" [marco]="false" [tamano]="18" /> Sacar de la ruta
+        </button>
+      }
+    } @else if (cargando()) {
+      <span class="etiqueta">CARGANDO LA RUTA</span>
+      <p>Precalentando…</p>
+    } @else if (hayMas()) {
+      <span class="etiqueta">PEAJE · KM {{ km() }}</span>
+      <p>Recorriste {{ lista().length }} de {{ total() }} publicaciones.</p>
+    } @else {
+      <span class="etiqueta">FIN DE LA RUTA</span>
+      <p>No hay más publicaciones por ahora.</p>
+      <a class="btn celeste ancho" routerLink="/publicar">Publicar</a>
+    }
   </aside>
 </ng-template>
 
@@ -22,11 +40,40 @@
   <div class="marco">
     <div class="carretera" #carretera (scroll)="alScrollear()" tabindex="0"
          aria-label="Ruta de publicaciones. Usá la rueda, las flechas o los pedales para avanzar.">
-      @for (p of lista(); track p.id; let i = $index) {
+      @for (p of lista(); track p._id; let i = $index) {
         <div class="tramo">
-          <app-publicacion-card [publicacion]="p" [posicion]="i + 1" />
+          <app-publicacion-card
+            [publicacion]="p"
+            [posicion]="i + 1"
+            [usuarioId]="usuarioId()"
+            [procesando]="procesandoId() === p._id"
+            (luces)="alternarLuces(p)" />
         </div>
       }
+
+      <!-- Último tramo: cargando, peaje (paginación) o fin de la ruta -->
+      <div class="tramo">
+        <div class="cartel">
+          @if (cargando()) {
+            <app-luz-testigo tipo="bujia" [tamano]="44" />
+            <h2>Precalentando…</h2>
+          } @else if (hayMas()) {
+            <span class="chapa">PEAJE</span>
+            <h2>Quedan {{ restantes() }} publicaciones</h2>
+            <button class="btn amarillo" type="button" (click)="pasarPeaje()">
+              Pasar el peaje ({{ restantes() < porPagina ? restantes() : porPagina }} más)
+            </button>
+          } @else if (lista().length) {
+            <span class="chapa">FIN</span>
+            <h2>Fin de la ruta</h2>
+            <p>Ya viste las {{ total() }} publicaciones.</p>
+          } @else {
+            <span class="chapa">VACÍA</span>
+            <h2>La ruta está vacía</h2>
+            <a class="btn celeste" routerLink="/publicar">Publicar el primero</a>
+          }
+        </div>
+      </div>
     </div>
 
     <app-pedalera
@@ -34,7 +81,7 @@
       [orden]="orden()"
       [presionado]="presionado()"
       [hayAnterior]="indice() > 0"
-      [haySiguiente]="indice() < lista().length - 1"
+      [haySiguiente]="indice() < lista().length || hayMas()"
       (embrague)="cambiarOrden()"
       (freno)="anterior()"
       (acelerador)="siguiente()" />
@@ -42,15 +89,24 @@
 
   <section class="comentarios" aria-label="Comentarios">
     <h2>Comentarios</h2>
-    @for (c of pub.comentarios; track $index) {
-      <div class="tarjeta comentario">
-        <span class="autor">{{ c.autor }}</span>
-        <p>{{ c.texto }}</p>
-      </div>
-    } @empty {
-      <p class="vacio">Todavía nadie comentó. ¡Hacele luces y sé el primero!</p>
+    @if (actual()) {
+      <p class="vacio">Todavía no hay comentarios.</p>
+      <input class="nuevo" placeholder="Escribí un comentario… (próximamente)" disabled
+             aria-label="Escribir un comentario (próximamente)">
     }
-    <input class="nuevo" placeholder="Escribí un comentario… (próximamente)" disabled
-           aria-label="Escribir un comentario (próximamente)">
   </section>
 </div>
+
+@if (modal(); as m) {
+  <app-modal-mensaje [titulo]="m.titulo" [mensaje]="m.mensaje" [tipo]="m.tipo" (cerrar)="modal.set(null)" />
+}
+
+@if (aBorrar(); as b) {
+  <app-modal-mensaje
+    tipo="peligro"
+    titulo="¿Sacás este auto de la ruta?"
+    [mensaje]="'“' + b.titulo + '” deja de aparecer en la ruta y en tu garage. No se puede deshacer.'"
+    textoConfirmar="Sí, sacarlo"
+    (cerrar)="aBorrar.set(null)"
+    (confirmar)="confirmarBorrado()" />
+}

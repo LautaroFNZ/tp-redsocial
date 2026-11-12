@@ -96,6 +96,13 @@
     font-size: 11px;
     font-weight: 700;
   }
+  .sin-comentarios {
+    display: block;
+    margin-top: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--gris);
+  }
 }
 
 .ultima {
@@ -124,4 +131,39 @@
 
 @media (max-width: 900px) {
   .cocheras { grid-template-columns: repeat(2, 1fr); }
+}
+
+// ---------- botón Sacar en cada cochera ----------
+.sacar {
+  margin-top: 6px;
+  width: 100%;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 2px solid var(--rojo);
+  border-radius: 20px;
+  background: var(--blanco);
+  color: var(--rojo);
+  font-family: var(--fuente-titulo);
+  font-size: 10px;
+  cursor: pointer;
+
+  &:focus-visible { outline: 3px solid var(--amarillo); }
+}
+
+// ---------- garage inexistente ----------
+.no-encontrado {
+  max-width: 380px;
+  margin: 80px auto 0;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+
+  h2 { font-size: 20px; }
+  p { margin: 0; font-size: 14px; color: #4A4D55; }
 }
