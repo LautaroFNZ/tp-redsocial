@@ -77,7 +77,8 @@ export class Publicaciones {
       );
     });
 
-    this.cargar(true);
+    // al dibujar la lista, arranca en el KM 001 (si no, el snap queda enganchado al cartel del final)
+    this.cargar(true, () => this.irAlTramo(0));
 
     afterNextRender(() => this.panel.contenido.set(this.tarjetaConductor()));
     inject(DestroyRef).onDestroy(() => {
@@ -109,8 +110,10 @@ export class Publicaciones {
     });
   }
 
-  pasarPeaje() {
-    if (this.hayMas() && !this.cargando()) this.cargar();
+    pasarPeaje() {
+    if (!this.hayMas() || this.cargando()) return;
+    const primeraNueva = this.lista().length; // donde estaba el peaje queda la primera publicación nueva
+    this.cargar(false, () => this.irAlTramo(primeraNueva));
   }
 
   // ---------- scroll y pedales ----------
@@ -155,14 +158,16 @@ export class Publicaciones {
     this.orden.update(o => (o === 'fecha' ? 'meGusta' : 'fecha'));
     this.lista.set([]);   // vacía la ruta mientras carga (se ve el precalentamiento)
     this.total.set(0);
-    this.irAlInicio();
-    this.cargar(true, () => this.irAlInicio());
+    this.irAlTramo(0);
+    this.cargar(true, () => this.irAlTramo(0));
   }
 
-  private irAlInicio() {
-    this.indice.set(0);
-    this.ultimoScroll = 0;
-    this.carretera().nativeElement.scrollTo({ top: 0 });
+  // Mueve la ruta a un tramo sin animación (se usa después de cargar)
+  private irAlTramo(i: number) {
+    const top = i * this.altoTramo();
+    this.indice.set(i);
+    this.ultimoScroll = top;
+    this.carretera().nativeElement.scrollTo({ top });
   }
 
   // ---------- me gusta (luces altas) ----------
