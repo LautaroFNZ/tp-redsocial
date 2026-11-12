@@ -36,22 +36,22 @@
     <header>
       <h1 id="titulo-garage">{{ esPropio() ? 'Tu garage' : 'El garage de ' + u.usuario }}</h1>
       <span>
-        @if (cargando()) {
+        @if (cargando() && !total()) {
           Abriendo el portón…
         } @else if (total()) {
-          Últimos 3 de {{ total() }} autos estacionados
+          {{ resumen() }}
         } @else {
           {{ esPropio() ? 'Todavía no estacionaste ningún auto' : 'Todavía no estacionó ningún auto' }}
         }
       </span>
     </header>
 
-    <div class="cocheras">
+    <div class="cocheras" [class.cambiando]="cargando()">
       @for (p of publicaciones(); track p._id; let i = $index) {
         <div class="cochera">
-          <span class="numero">cochera {{ i + 1 }}</span>
+          <span class="numero">cochera {{ desde() + i + 1 }}</span>
           <article class="auto">
-            @if (i === 0) { <span class="ultima">LA ÚLTIMA</span> }
+            @if (pagina() === 0 && i === 0) { <span class="ultima">LA ÚLTIMA</span> }
             <div class="foto"><app-foto-auto [imagen]="p.imagen" [alt]="p.titulo" /></div>
             <div class="info">
               <h3>{{ p.titulo }}</h3>
@@ -82,9 +82,37 @@
         </div>
       }
       @for (l of libres(); track $index) {
-        <div class="cochera libre"><span>LIBRE</span></div>
+        <div class="cochera libre">
+          <span class="numero">cochera {{ desde() + publicaciones().length + $index + 1 }}</span>
+          <span class="cartel-libre">LIBRE</span>
+        </div>
       }
     </div>
+
+    <!-- Paginado por pisos: solo si hay más de 3 autos -->
+    @if (totalPisos() > 1) {
+      <nav class="rampas" aria-label="Pisos del garage">
+        <button class="rampa" type="button" (click)="bajar()" [disabled]="!hayMasViejas() || cargando()">
+          ▼ Rampa abajo
+          @if (hayMasViejas()) { <small>más viejas · {{ cocherasDeAbajo() }}</small> }
+        </button>
+
+        <div class="cartel-piso" aria-live="polite">
+          <small>{{ numeroPiso() === 0 ? 'ESTÁS EN' : 'ESTÁS EN EL' }}</small>
+          <b>{{ numeroPiso() === 0 ? 'PB' : 'PISO ' + numeroPiso() }}</b>
+          <em>
+            @if (pagina() === 0) { el de arriba · las últimas }
+            @else if (!hayMasViejas()) { el de abajo · las más viejas }
+            @else { de {{ totalPisos() }} pisos }
+          </em>
+        </div>
+
+        <button class="rampa" type="button" (click)="subir()" [disabled]="!hayMasNuevas() || cargando()">
+          Rampa arriba ▲
+          @if (hayMasNuevas()) { <small>más nuevas</small> }
+        </button>
+      </nav>
+    }
   </section>
 }
 
