@@ -58,8 +58,19 @@
               <span class="stats">
                 <app-luz-testigo tipo="luces" [marco]="false" [tamano]="14" /> {{ p.cantidadMeGusta }}
               </span>
-              <!-- Sprint 3: acá se listan los comentarios -->
-              <span class="sin-comentarios">💬 Sin comentarios todavía</span>
+              @let cs = comentariosDe()[p._id];
+              @if (cs?.length) {
+                <ul class="mini-comentarios">
+                  @for (c of cs; track c._id) {
+                    <li><b>{{ c.autor.usuario }}</b> {{ c.mensaje }}</li>
+                  }
+                </ul>
+              } @else {
+                <span class="sin-comentarios">💬 Sin comentarios todavía</span>
+              }
+              <a class="ver-todos" [routerLink]="['/publicacion', p._id]">
+                💬 {{ p.cantidadComentarios ?? 0 }} · ver publicación
+              </a>
               @if (puedeBorrar()) {
                 <button class="sacar" type="button" (click)="aBorrar.set(p)"
                         [attr.aria-label]="'Sacar ' + p.titulo + ' del garage'">

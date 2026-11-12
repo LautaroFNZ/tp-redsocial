@@ -27,6 +27,12 @@ export class PublicacionesController {
     return this.publicacionesService.listar(filtros);
   }
 
+  // GET /publicaciones/:id → 200, 404 si no existe o fue dada de baja
+  @Get(':id')
+  obtener(@Param('id', ParseMongoIdPipe) id: string) {
+    return this.publicacionesService.obtener(id);
+  }
+
   // DELETE /publicaciones/:id → 204 (baja lógica)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)

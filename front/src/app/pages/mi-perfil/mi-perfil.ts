@@ -2,7 +2,7 @@ import { Component, DestroyRef, TemplateRef, afterNextRender, computed, inject, 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Observable, catchError, map, of, switchMap } from 'rxjs';
+import { Observable, catchError, forkJoin, map, of, switchMap } from 'rxjs';
 import { PublicacionesApi } from '../../services/publicaciones-api';
 import { UsuariosApi } from '../../services/usuarios-api';
 import { Sesion } from '../../services/sesion';
@@ -15,6 +15,8 @@ import { FotoAuto } from '../../shared/foto-auto/foto-auto';
 import { LuzTestigo } from '../../shared/luz-testigo/luz-testigo';
 import { SinSesion } from '../../shared/sin-sesion';
 import { Mensaje, ModalMensaje } from '../../shared/modal-mensaje/modal-mensaje';
+import { ComentariosApi } from '../../services/comentarios-api';
+import { Comentario } from '../../shared/modelos';
 
 // El dueño del garage: si es el propio trae también correo y fecha de nacimiento
 type Duenio = Autor & Partial<Pick<Usuario, 'correo' | 'fechaNacimiento'>>;
@@ -32,6 +34,8 @@ export class MiPerfil {
   private publicacionesApi = inject(PublicacionesApi);
   private usuariosApi = inject(UsuariosApi);
   private sesion = inject(Sesion);
+  private comentariosApi = inject(ComentariosApi);
+  comentariosDe = signal<Record<string, Comentario[]>>({}); // últimos 2 de cada cochera
 
   duenio = signal<Duenio | null>(null);
   buscado = signal(''); // el usuario de la URL, para el mensaje de "no encontrado"
@@ -109,8 +113,19 @@ export class MiPerfil {
         this.publicaciones.set(pagina.publicaciones);
         this.total.set(pagina.total);
         this.cargando.set(false);
+        this.cargarComentarios(pagina.publicaciones);
       },
       error: () => this.cargando.set(false),
+    });
+  }
+
+  // "Mis últimas 3 publicaciones y sus comentarios"
+  private cargarComentarios(publicaciones: Publicacion[]) {
+    if (!publicaciones.length) return;
+    forkJoin(publicaciones.map(p => this.comentariosApi.listar(p._id, 0, 2))).subscribe(paginas => {
+      const mapa: Record<string, Comentario[]> = {};
+      publicaciones.forEach((p, i) => (mapa[p._id] = paginas[i].comentarios));
+      this.comentariosDe.set(mapa);
     });
   }
 

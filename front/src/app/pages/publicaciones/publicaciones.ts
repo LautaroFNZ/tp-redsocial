@@ -1,26 +1,31 @@
 import {
   Component, DestroyRef, ElementRef, Injector, TemplateRef,
-  afterNextRender, computed, inject, signal, viewChild,
+  afterNextRender, computed, effect, inject, signal, untracked, viewChild,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PublicacionesApi } from '../../services/publicaciones-api';
+import { ComentariosApi } from '../../services/comentarios-api';
 import { Sesion } from '../../services/sesion';
 import { PanelLateral } from '../../shared/panel-lateral';
-import { Orden, Publicacion } from '../../shared/modelos';
+import { Comentario, Orden, Publicacion } from '../../shared/modelos';
 import { mensajeDeError } from '../../shared/mensaje-error';
 import { Avatar } from '../../shared/avatar/avatar';
 import { Patente } from '../../shared/patente/patente';
 import { LuzTestigo } from '../../shared/luz-testigo/luz-testigo';
 import { Mensaje, ModalMensaje } from '../../shared/modal-mensaje/modal-mensaje';
 import { PublicacionCard } from '../../components/publicacion-card/publicacion-card';
+import { ComentarioItem } from '../../components/comentario-item/comentario-item';
 import { Pedal, Pedalera } from '../../components/pedalera/pedalera';
 
 const POR_PAGINA = 5;
 
 @Component({
   selector: 'app-publicaciones',
-  imports: [DatePipe, RouterLink, Avatar, Patente, LuzTestigo, ModalMensaje, PublicacionCard, Pedalera],
+  imports: [
+    DatePipe, RouterLink, Avatar, Patente, LuzTestigo, ModalMensaje,
+    PublicacionCard, ComentarioItem, Pedalera,
+  ],
   templateUrl: './publicaciones.html',
   styleUrl: './publicaciones.scss',
   host: {
@@ -33,6 +38,7 @@ export class Publicaciones {
   private tarjetaConductor = viewChild.required<TemplateRef<unknown>>('conductor');
   private panel = inject(PanelLateral);
   private api = inject(PublicacionesApi);
+  private comentariosApi = inject(ComentariosApi);
   private sesion = inject(Sesion);
   private injector = inject(Injector);
 
@@ -48,6 +54,9 @@ export class Publicaciones {
   modal = signal<Mensaje | null>(null);
   aBorrar = signal<Publicacion | null>(null);
 
+  // Últimos 3 comentarios de cada publicación ya vista (para no pedirlos dos veces)
+  comentariosRuta = signal<Record<string, Comentario[]>>({});
+
   actual = computed(() => this.lista()[this.indice()] ?? null);
   hayMas = computed(() => this.lista().length < this.total());
   restantes = computed(() => this.total() - this.lista().length);
@@ -59,7 +68,17 @@ export class Publicaciones {
   private soltarPedal?: ReturnType<typeof setTimeout>;
 
   constructor() {
+    // Cada vez que cambia la publicación actual, trae sus últimos 3 comentarios
+    effect(() => {
+      const publicacion = this.actual();
+      if (!publicacion || untracked(this.comentariosRuta)[publicacion._id]) return;
+      this.comentariosApi.listar(publicacion._id, 0, 3).subscribe(pagina =>
+        this.comentariosRuta.update(mapa => ({ ...mapa, [publicacion._id]: pagina.comentarios })),
+      );
+    });
+
     this.cargar(true);
+
     afterNextRender(() => this.panel.contenido.set(this.tarjetaConductor()));
     inject(DestroyRef).onDestroy(() => {
       clearTimeout(this.soltarPedal);

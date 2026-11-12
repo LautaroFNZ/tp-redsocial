@@ -52,6 +52,21 @@ export declare class PublicacionesController {
         offset: number;
         limit: number;
     }>;
+    obtener(id: string): Promise<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("./schemas/publicacion.schema.js").Publicacion, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/publicacion.schema.js").Publicacion & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    } & {
+        id: string;
+    }, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Document<unknown, {}, import("./schemas/publicacion.schema.js").Publicacion, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/publicacion.schema.js").Publicacion & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    } & {
+        id: string;
+    } & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }>>;
     eliminar(id: string, dto: AccionUsuarioDto): Promise<void>;
     darMeGusta(id: string, dto: AccionUsuarioDto): Promise<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("./schemas/publicacion.schema.js").Publicacion, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/publicacion.schema.js").Publicacion & {
         _id: import("mongoose").Types.ObjectId;

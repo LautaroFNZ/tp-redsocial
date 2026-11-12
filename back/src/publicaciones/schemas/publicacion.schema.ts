@@ -27,6 +27,10 @@ export class Publicacion {
   @Prop({ default: 0 })
   cantidadMeGusta: number;
 
+  // Contador para mostrar cuántos comentarios tiene sin tener que contarlos
+  @Prop({ default: 0 })
+  cantidadComentarios: number;
+
   // Baja lógica
   @Prop({ default: true })
   activa: boolean;

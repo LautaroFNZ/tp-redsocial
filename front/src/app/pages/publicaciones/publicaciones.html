@@ -12,7 +12,6 @@
       <h2>{{ p.titulo }}</h2>
       <p>{{ p.mensaje }}</p>
       <span class="fecha">{{ p.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
-      <!-- Sprint 5: llevará al garage de ese usuario -->
       <a class="btn amarillo ancho"
          [routerLink]="p.autor._id === usuarioId() ? ['/mi-perfil'] : ['/garage', p.autor.usuario]">
         Ver garage de {{ p.autor.usuario }}
@@ -87,12 +86,23 @@
       (acelerador)="siguiente()" />
   </div>
 
+  <!-- Derecha: últimos 3 comentarios de la publicación actual -->
   <section class="comentarios" aria-label="Comentarios">
     <h2>Comentarios</h2>
-    @if (actual()) {
-      <p class="vacio">Todavía no hay comentarios.</p>
-      <input class="nuevo" placeholder="Escribí un comentario… (próximamente)" disabled
-             aria-label="Escribir un comentario (próximamente)">
+    @if (actual(); as p) {
+      @let ultimos = comentariosRuta()[p._id];
+      @if (ultimos === undefined) {
+        <p class="vacio">Cargando…</p>
+      } @else {
+        @for (c of ultimos; track c._id) {
+          <app-comentario-item [comentario]="c" [compacto]="true" />
+        } @empty {
+          <p class="vacio">Todavía no hay comentarios.</p>
+        }
+      }
+      <a class="btn ancho" [routerLink]="['/publicacion', p._id]">
+        {{ (p.cantidadComentarios ?? 0) > 0 ? 'Ver todos y comentar (' + p.cantidadComentarios + ')' : 'Comentar' }}
+      </a>
     }
   </section>
 </div>

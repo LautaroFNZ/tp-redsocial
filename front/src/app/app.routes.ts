@@ -39,6 +39,11 @@ export const routes: Routes = [
         title: 'Garage · GarageHub',
         loadComponent: () => import('./pages/mi-perfil/mi-perfil').then(m => m.MiPerfil),
       },
+      {
+        path: 'publicacion/:id',
+        title: 'Publicación · GarageHub',
+        loadComponent: () => import('./pages/publicacion-detalle/publicacion-detalle').then(m => m.PublicacionDetalle),
+      },
     ],
   },
 

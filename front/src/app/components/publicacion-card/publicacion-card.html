@@ -2,7 +2,9 @@
 <article class="publicacion">
   <app-foto-auto class="foto" [imagen]="p.imagen" [alt]="p.titulo" />
 
-  <span class="km" [attr.aria-label]="'Publicación número ' + posicion()">KM {{ km() }}</span>
+  @if (mostrarKm()) {
+    <span class="km" [attr.aria-label]="'Publicación número ' + posicion()">KM {{ km() }}</span>
+  }
 
   <div class="acciones">
     <button class="accion" type="button" [class.prendida]="leGusta()" [disabled]="procesando()"
@@ -12,11 +14,12 @@
     </button>
     <span>{{ p.cantidadMeGusta }}</span>
 
-    <button class="accion clara" type="button" disabled aria-label="Comentarios (próximamente)">
+    <a class="accion clara" [routerLink]="['/publicacion', p._id]" aria-label="Ver la publicación y sus comentarios">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2.4"
            stroke-linejoin="round" aria-hidden="true">
         <path d="M4 5h16v11H9l-5 4z"/>
       </svg>
-    </button>
+    </a>
+    <span>{{ p.cantidadComentarios ?? 0 }}</span>
   </div>
 </article>

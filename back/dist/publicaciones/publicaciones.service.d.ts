@@ -56,6 +56,21 @@ export declare class PublicacionesService {
         offset: number;
         limit: number;
     }>;
+    obtener(id: string): Promise<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, Publicacion, {}, import("mongoose").DefaultSchemaOptions> & Publicacion & {
+        _id: Types.ObjectId;
+    } & {
+        __v: number;
+    } & {
+        id: string;
+    }, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Document<unknown, {}, Publicacion, {}, import("mongoose").DefaultSchemaOptions> & Publicacion & {
+        _id: Types.ObjectId;
+    } & {
+        __v: number;
+    } & {
+        id: string;
+    } & Required<{
+        _id: Types.ObjectId;
+    }>>;
     eliminar(id: string, usuarioId: string): Promise<void>;
     darMeGusta(id: string, usuarioId: string): Promise<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, Publicacion, {}, import("mongoose").DefaultSchemaOptions> & Publicacion & {
         _id: Types.ObjectId;

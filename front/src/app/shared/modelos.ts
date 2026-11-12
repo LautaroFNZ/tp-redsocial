@@ -22,6 +22,7 @@ export interface Publicacion {
   autor: Autor;
   meGusta: string[];        // ids de quienes le hicieron luces
   cantidadMeGusta: number;
+  cantidadComentarios?: number; // las publicaciones viejas pueden no tenerlo
   activa: boolean;
   createdAt: string;
   updatedAt: string;
@@ -36,3 +37,21 @@ export interface PaginaPublicaciones {
 }
 
 export type Orden = 'fecha' | 'meGusta';
+
+export interface Comentario {
+  _id: string;
+  publicacion: string;
+  autor: Autor;
+  mensaje: string;
+  modificado: boolean; // la consigna pide marcar los editados
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Respuesta de GET /publicaciones/:id/comentarios
+export interface PaginaComentarios {
+  comentarios: Comentario[];
+  total: number;
+  offset: number;
+  limit: number;
+}

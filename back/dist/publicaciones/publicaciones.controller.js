@@ -29,6 +29,9 @@ let PublicacionesController = class PublicacionesController {
     listar(filtros) {
         return this.publicacionesService.listar(filtros);
     }
+    obtener(id) {
+        return this.publicacionesService.obtener(id);
+    }
     eliminar(id, dto) {
         return this.publicacionesService.eliminar(id, dto.usuario);
     }
@@ -55,6 +58,13 @@ __decorate([
     __metadata("design:paramtypes", [ListarPublicacionesDto]),
     __metadata("design:returntype", void 0)
 ], PublicacionesController.prototype, "listar", null);
+__decorate([
+    Get(':id'),
+    __param(0, Param('id', ParseMongoIdPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PublicacionesController.prototype, "obtener", null);
 __decorate([
     Delete(':id'),
     HttpCode(HttpStatus.NO_CONTENT),

@@ -59,6 +59,15 @@ let PublicacionesService = class PublicacionesService {
         ]);
         return { publicaciones, total, offset, limit };
     }
+    async obtener(id) {
+        const publicacion = await this.publicacionModel
+            .findOne({ _id: id, activa: true })
+            .populate('autor', CAMPOS_AUTOR)
+            .exec();
+        if (!publicacion)
+            throw new NotFoundException('La publicación no existe.');
+        return publicacion;
+    }
     async eliminar(id, usuarioId) {
         const usuario = await this.usuarioActivo(usuarioId);
         const publicacion = await this.publicacionModel.findOne({ _id: id, activa: true }).exec();

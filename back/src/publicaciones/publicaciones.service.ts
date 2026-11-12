@@ -64,6 +64,16 @@ export class PublicacionesService {
     return { publicaciones, total, offset, limit };
   }
 
+  // ---------- GET /publicaciones/:id ----------
+  async obtener(id: string) {
+    const publicacion = await this.publicacionModel
+      .findOne({ _id: id, activa: true })
+      .populate('autor', CAMPOS_AUTOR)
+      .exec();
+    if (!publicacion) throw new NotFoundException('La publicación no existe.');
+    return publicacion;
+  }
+
   // ---------- DELETE /publicaciones/:id (baja lógica) ----------
   async eliminar(id: string, usuarioId: string) {
     const usuario = await this.usuarioActivo(usuarioId);

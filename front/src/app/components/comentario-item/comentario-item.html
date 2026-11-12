@@ -1,0 +1,24 @@
+@let c = comentario();
+<div class="comentario tarjeta" [class.editando]="editando()">
+  <span class="autor">{{ c.autor.usuario }}</span>
+
+  @if (editando()) {
+    <textarea [formControl]="texto" maxlength="300" rows="2" aria-label="Editar comentario"></textarea>
+    @if (error(); as e) { <p class="msg-error">{{ e }}</p> }
+    <div class="botones">
+      <button type="button" class="chico" (click)="cancelar()">Cancelar</button>
+      <button type="button" class="chico verde" (click)="guardar()" [disabled]="guardando()">Guardar</button>
+    </div>
+  } @else {
+    <p class="texto">{{ c.mensaje }}</p>
+    <div class="meta">
+      <span>
+        {{ c.createdAt | haceCuanto }}
+        @if (c.modificado) { · <b class="editado">editado</b> }
+      </span>
+      @if (esMio() && !compacto()) {
+        <button type="button" class="link" (click)="empezar()">Editar</button>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,77 @@
+.comentario {
+  padding: 10px 12px;
+
+  &.editando { outline: 3px solid var(--amarillo); }
+}
+
+.autor {
+  display: inline-block;
+  padding: 0 7px;
+  border: 2px solid var(--negro);
+  border-radius: 5px;
+  font-family: var(--fuente-titulo);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.texto {
+  margin: 5px 0 0;
+  font-size: 13px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--gris);
+}
+
+.editado { color: #F28C28; }
+
+.link {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--negro);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px 8px;
+  border: 3px solid var(--negro);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 13px;
+  resize: vertical;
+}
+
+.botones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.chico {
+  padding: 3px 10px;
+  border: 2px solid var(--negro);
+  border-radius: 14px;
+  background: var(--blanco);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &.verde { background: var(--verde); color: var(--blanco); }
+  &:disabled { opacity: 0.6; }
+}
