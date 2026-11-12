@@ -4,6 +4,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Patente } from '../shared/patente/patente';
 import { PanelLateral } from '../shared/panel-lateral';
 import { Sesion } from '../services/sesion';
+import { Ruta } from '../services/ruta';
 
 @Component({
   selector: 'app-layout',
@@ -14,4 +15,5 @@ import { Sesion } from '../services/sesion';
 export class Layout {
   panel = inject(PanelLateral);
   sesion = inject(Sesion);
+  ruta = inject(Ruta);
 }

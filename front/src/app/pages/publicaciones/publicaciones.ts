@@ -17,6 +17,7 @@ import { Mensaje, ModalMensaje } from '../../shared/modal-mensaje/modal-mensaje'
 import { PublicacionCard } from '../../components/publicacion-card/publicacion-card';
 import { ComentarioItem } from '../../components/comentario-item/comentario-item';
 import { Pedal, Pedalera } from '../../components/pedalera/pedalera';
+import { Ruta } from '../../services/ruta';
 
 const POR_PAGINA = 5;
 
@@ -41,6 +42,7 @@ export class Publicaciones {
   private comentariosApi = inject(ComentariosApi);
   private sesion = inject(Sesion);
   private injector = inject(Injector);
+  private ruta = inject(Ruta);
 
   readonly porPagina = POR_PAGINA;
 
@@ -75,6 +77,14 @@ export class Publicaciones {
       this.comentariosApi.listar(publicacion._id, 0, 3).subscribe(pagina =>
         this.comentariosRuta.update(mapa => ({ ...mapa, [publicacion._id]: pagina.comentarios })),
       );
+    });
+
+    // Logo o botón "Ruta" estando acá: recarga desde el KM 001 (la primera vez no, porque ya carga sola)
+    let primeraVez = true;
+    effect(() => {
+      this.ruta.reinicios();
+      if (primeraVez) { primeraVez = false; return; }
+      untracked(() => this.recargar());
     });
 
     // al dibujar la lista, arranca en el KM 001 (si no, el snap queda enganchado al cartel del final)
@@ -156,8 +166,14 @@ export class Publicaciones {
   // Embrague: cambia el orden y la ruta arranca de nuevo desde el KM 001
   cambiarOrden() {
     this.orden.update(o => (o === 'fecha' ? 'meGusta' : 'fecha'));
+    this.recargar();
+  }
+
+  // Vacía la ruta y la vuelve a pedir desde cero (trae publicaciones y comentarios nuevos)
+  recargar() {
     this.lista.set([]);   // vacía la ruta mientras carga (se ve el precalentamiento)
     this.total.set(0);
+    this.comentariosRuta.set({});
     this.irAlTramo(0);
     this.cargar(true, () => this.irAlTramo(0));
   }
