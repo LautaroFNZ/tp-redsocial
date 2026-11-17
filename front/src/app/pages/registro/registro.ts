@@ -9,6 +9,7 @@ import {
   coincidenPasswords, edadPermitida, passwordSegura,
 } from '../../shared/validators';
 import { Auth } from '../../services/auth';
+import { Sesion } from '../../services/sesion';
 import { LuzTestigo } from '../../shared/luz-testigo/luz-testigo';
 import { mensajeDeError } from '../../shared/mensaje-error';
 
@@ -24,6 +25,7 @@ export class Registro {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private auth = inject(Auth);
+  private sesion = inject(Sesion);
   cargando = signal(false);
 
   form = this.fb.nonNullable.group(
@@ -160,12 +162,13 @@ export class Registro {
 
     this.cargando.set(true);
     this.auth.registro(datos).subscribe({
-      next: usuario => {
+      next: ({ usuario, token }) => {
         this.cargando.set(false);
+        this.sesion.iniciar(usuario, token);
         this.modal.set({
           tipo: 'ok',
           titulo: '¡Patente lista!',
-          mensaje: `Tu garage ${usuario.usuario} quedó armado. Ahora ingresá con tus datos.`,
+          mensaje: `Tu garage ${usuario.usuario} quedó armado. ¡A estacionar autos!`,
         });
       },
       error: error => {
@@ -178,6 +181,6 @@ export class Registro {
   cerrarModal() {
     const exito = this.modal()?.tipo === 'ok';
     this.modal.set(null);
-    if (exito) this.router.navigate(['/login']);
+    if (exito) this.router.navigate(['/publicaciones']);
   }
 }

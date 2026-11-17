@@ -8,6 +8,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
 import { UsuariosService } from '../usuarios/usuarios.service.js';
 import { FileService } from '../archivos/file.service.js';
@@ -23,9 +24,11 @@ function calcularEdad(nacimiento, hoy = new Date()) {
 let AuthService = class AuthService {
     usuariosService;
     fileService;
-    constructor(usuariosService, fileService) {
+    jwtService;
+    constructor(usuariosService, fileService, jwtService) {
         this.usuariosService = usuariosService;
         this.fileService = fileService;
+        this.jwtService = jwtService;
     }
     async registro(dto, foto) {
         const nacimiento = new Date(dto.fechaNacimiento);
@@ -42,13 +45,15 @@ let AuthService = class AuthService {
         await this.usuariosService.verificarDisponible(dto.correo, dto.usuario);
         const fotoUrl = foto ? await this.fileService.cloudinaryUploader(foto) : null;
         const password = await bcrypt.hash(dto.password, 10);
-        return this.usuariosService.crear({
+        const usuario = await this.usuariosService.crear({
             ...dto,
             fechaNacimiento: nacimiento,
             password,
             foto: fotoUrl,
             perfil: 'usuario',
         });
+        const token = await this.firmarToken(usuario);
+        return { usuario, token };
     }
     async login(dto) {
         const usuario = await this.usuariosService.buscarParaLogin(dto.usuario);
@@ -59,13 +64,41 @@ let AuthService = class AuthService {
         if (!usuario.activo) {
             throw new ForbiddenException('Tu cuenta está deshabilitada. Contactá a un administrador.');
         }
+        const token = await this.firmarToken(usuario);
+        return { usuario, token };
+    }
+    async autorizar(id) {
+        const usuario = await this.usuariosService.buscarPorId(id);
+        if (!usuario) {
+            throw new UnauthorizedException('La sesión ya no es válida.');
+        }
+        if (!usuario.activo) {
+            throw new ForbiddenException('Tu cuenta está deshabilitada.');
+        }
         return usuario;
+    }
+    async refrescar(payload) {
+        const token = await this.jwtService.signAsync({
+            sub: payload.sub,
+            usuario: payload.usuario,
+            perfil: payload.perfil,
+        });
+        return { token };
+    }
+    firmarToken(usuario) {
+        const payload = {
+            sub: String(usuario._id),
+            usuario: usuario.usuario,
+            perfil: usuario.perfil,
+        };
+        return this.jwtService.signAsync(payload);
     }
 };
 AuthService = __decorate([
     Injectable(),
     __metadata("design:paramtypes", [UsuariosService,
-        FileService])
+        FileService,
+        JwtService])
 ], AuthService);
 export { AuthService };
 //# sourceMappingURL=auth.service.js.map

@@ -55,3 +55,9 @@ export interface PaginaComentarios {
   offset: number;
   limit: number;
 }
+
+// Respuesta del login y el registro: datos del usuario + su token JWT
+export interface RespuestaAuth {
+  usuario: Usuario;
+  token: string;
+}

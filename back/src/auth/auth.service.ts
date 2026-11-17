@@ -1,9 +1,12 @@
 import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
 import { UsuariosService } from '../usuarios/usuarios.service.js';
 import { FileService } from '../archivos/file.service.js';
 import { RegistroDto } from './dto/registro.dto.js';
 import { LoginDto } from './dto/login.dto.js';
+import type { UsuarioDocument } from '../usuarios/schemas/usuario.schema.js';
+import type { TokenPayload } from './token-payload.js';
 
 const EDAD_MINIMA = 13;
 const EDAD_MAXIMA = 100;
@@ -15,12 +18,13 @@ function calcularEdad(nacimiento: Date, hoy = new Date()): number {
   return edad;
 }
 
-// En NestJS los servicios se declaran con @Injectable() (no existe @Service(), que es de Angular)
+
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usuariosService: UsuariosService,
     private readonly fileService: FileService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async registro(dto: RegistroDto, foto?: Express.Multer.File) {
@@ -47,13 +51,17 @@ export class AuthService {
     const password = await bcrypt.hash(dto.password, 10);
 
     // 4. Guardar. El perfil siempre arranca como "usuario"
-    return this.usuariosService.crear({
+    const usuario = await this.usuariosService.crear({
       ...dto,
       fechaNacimiento: nacimiento,
       password,
       foto: fotoUrl,
       perfil: 'usuario',
     });
+
+    // Al registrarse, ya queda logueado: devolvemos el usuario y su token
+    const token = await this.firmarToken(usuario);
+    return { usuario, token };
   }
 
   async login(dto: LoginDto) {
@@ -71,7 +79,40 @@ export class AuthService {
       throw new ForbiddenException('Tu cuenta está deshabilitada. Contactá a un administrador.');
     }
 
-    // Devuelve todos los datos del usuario (el toJSON del schema quita la contraseña)
+    // Devuelve los datos del usuario (el toJSON del schema quita la contraseña) y el token
+    const token = await this.firmarToken(usuario);
+    return { usuario, token };
+  }
+
+  // POST /auth/autorizar: el guard ya validó el token; devolvemos los datos frescos del usuario
+  async autorizar(id: string) {
+    const usuario = await this.usuariosService.buscarPorId(id);
+    if (!usuario) {
+      throw new UnauthorizedException('La sesión ya no es válida.');
+    }
+    if (!usuario.activo) {
+      throw new ForbiddenException('Tu cuenta está deshabilitada.');
+    }
     return usuario;
+  }
+
+  // POST /auth/refrescar: el guard ya validó el token; firmamos uno nuevo con la misma info
+  async refrescar(payload: TokenPayload) {
+    const token = await this.jwtService.signAsync({
+      sub: payload.sub,
+      usuario: payload.usuario,
+      perfil: payload.perfil,
+    });
+    return { token };
+  }
+
+  // Arma y firma el token con lo que la consigna pide: quién es y su rol
+  private firmarToken(usuario: UsuarioDocument) {
+    const payload: TokenPayload = {
+      sub: String(usuario._id),
+      usuario: usuario.usuario,
+      perfil: usuario.perfil,
+    };
+    return this.jwtService.signAsync(payload);
   }
 }

@@ -5,17 +5,32 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
+import { AuthGuard } from './auth.guard.js';
 import { UsuariosModule } from '../usuarios/usuarios.module.js';
 import { ArchivosModule } from '../archivos/archivos.module.js';
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
     Module({
-        imports: [UsuariosModule, ArchivosModule],
+        imports: [
+            UsuariosModule,
+            ArchivosModule,
+            JwtModule.registerAsync({
+                global: true,
+                inject: [ConfigService],
+                useFactory: (config) => ({
+                    secret: config.getOrThrow('JWT_SECRET'),
+                    signOptions: { expiresIn: '15m' },
+                }),
+            }),
+        ],
         controllers: [AuthController],
-        providers: [AuthService],
+        providers: [AuthService, AuthGuard],
+        exports: [AuthGuard],
     })
 ], AuthModule);
 export { AuthModule };

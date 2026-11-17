@@ -53,9 +53,9 @@ export class Login {
 
     this.cargando.set(true);
     this.auth.login(this.form.getRawValue()).subscribe({
-      next: usuario => {
+      next: ({ usuario, token }) => {
         this.cargando.set(false);
-        this.sesion.iniciar(usuario);
+        this.sesion.iniciar(usuario, token);
         this.modal.set({ tipo: 'ok', titulo: '¡Motor en marcha!', mensaje: `Bienvenido, ${usuario.nombre}.` });
       },
       error: error => {
