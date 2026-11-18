@@ -1,6 +1,30 @@
 @let p = publicacion();
 <article class="publicacion">
-  <app-foto-auto class="foto" [imagen]="p.imagen" [alt]="p.titulo" />
+  @if (resumen()) {
+    <a class="zona" [routerLink]="['/publicacion', p._id]" aria-label="Ver la publicación completa">
+      @if (p.imagen) {
+        <app-foto-auto class="foto" [imagen]="p.imagen" [alt]="p.titulo" />
+        <span class="tocar">Tocá para ver todo</span>
+        <div class="info">
+          <h3>{{ p.titulo }}</h3>
+          <p class="recorte">{{ p.mensaje }}</p>
+          <span class="fecha-clara">{{ p.createdAt | date: 'dd/MM/yyyy · HH:mm' }}</span>
+        </div>
+      } @else {
+        <div class="cartel">
+          <div class="senal">
+            <span class="flecha" aria-hidden="true">▸</span>
+            <h3>{{ p.titulo }}</h3>
+            <p class="recorte-cartel">{{ p.mensaje }}</p>
+            <span class="fecha-cartel">{{ p.createdAt | date: 'dd/MM/yyyy · HH:mm' }}</span>
+          </div>
+          <div class="patas" aria-hidden="true"><span class="piso"></span></div>
+        </div>
+      }
+    </a>
+  } @else {
+    <app-foto-auto class="foto" [imagen]="p.imagen" [alt]="p.titulo" />
+  }
 
   @if (mostrarKm()) {
     <span class="km" [attr.aria-label]="'Publicación número ' + posicion()">KM {{ km() }}</span>

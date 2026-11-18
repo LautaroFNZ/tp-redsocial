@@ -1,4 +1,4 @@
-<!-- Tarjeta de la columna izquierda -->
+<!-- Tarjeta de la columna izquierda: solo la persona y los accesos -->
 <ng-template #conductor>
   @let p = actual();
   <aside class="tarjeta conductor">
@@ -9,9 +9,6 @@
         <b>{{ p.autor.nombre }} {{ p.autor.apellido }}</b>
       </div>
       <app-patente [texto]="p.autor.usuario" />
-      <h2>{{ p.titulo }}</h2>
-      <p>{{ p.mensaje }}</p>
-      <span class="fecha">{{ p.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
       <a class="btn amarillo ancho"
          [routerLink]="p.autor._id === usuarioId() ? ['/mi-perfil'] : ['/garage', p.autor.usuario]">
         Ver garage de {{ p.autor.usuario }}
