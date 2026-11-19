@@ -1,9 +1,11 @@
 import { Component, computed, input } from '@angular/core';
 import { Usuario } from '../modelos';
 import { colorDeUsuario } from '../colores';
+import { ImagenRespaldo } from '../directivas/imagen-respaldo.directive';
 
 @Component({
   selector: 'app-avatar',
+  imports: [ImagenRespaldo],
   templateUrl: './avatar.html',
   styleUrl: './avatar.scss',
 })

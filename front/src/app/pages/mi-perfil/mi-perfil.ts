@@ -16,6 +16,9 @@ import { FotoAuto } from '../../shared/foto-auto/foto-auto';
 import { LuzTestigo } from '../../shared/luz-testigo/luz-testigo';
 import { SinSesion } from '../../shared/sin-sesion';
 import { Mensaje, ModalMensaje } from '../../shared/modal-mensaje/modal-mensaje';
+import { RecortarPipe } from '../../shared/pipes/recortar.pipe';
+import { EdadPipe } from '../../shared/pipes/edad.pipe';
+import { SoloAdmin } from '../../shared/directivas/solo-admin.directive';
 
 // El dueño del garage: si es el propio trae también correo y fecha de nacimiento
 type Duenio = Autor & Partial<Pick<Usuario, 'correo' | 'fechaNacimiento'>>;
@@ -26,7 +29,10 @@ const POR_PISO = 3;
 
 @Component({
   selector: 'app-mi-perfil',
-  imports: [DatePipe, RouterLink, Avatar, Patente, FotoAuto, LuzTestigo, SinSesion, ModalMensaje],
+  imports: [
+    DatePipe, RouterLink, Avatar, Patente, FotoAuto, LuzTestigo, SinSesion, ModalMensaje,
+    RecortarPipe, EdadPipe, SoloAdmin,
+  ],
   templateUrl: './mi-perfil.html',
   styleUrl: './mi-perfil.scss',
 })
@@ -57,12 +63,6 @@ export class MiPerfil {
     const duenio = this.duenio();
     const yo = this.sesion.usuario();
     return !!duenio && !!yo && duenio._id === yo._id;
-  });
-
-  // Borrar: solo administrador
-  puedeBorrar = computed(() => {
-    const yo = this.sesion.usuario();
-    return !!yo && yo.perfil === 'administrador';
   });
 
   // ---------- pisos ----------

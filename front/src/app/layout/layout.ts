@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Patente } from '../shared/patente/patente';
@@ -7,13 +7,14 @@ import { PanelLateral } from '../shared/panel-lateral';
 import { Sesion } from '../services/sesion';
 import { Auth } from '../services/auth';
 import { Ruta } from '../services/ruta';
+import { SoloAdmin } from '../shared/directivas/solo-admin.directive';
 
 // Avisamos 5 minutos antes de que venza el token
 const MARGEN_AVISO = 5 * 60 * 1000;
 
 @Component({
   selector: 'app-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgTemplateOutlet, Patente, ModalMensaje],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgTemplateOutlet, Patente, ModalMensaje, SoloAdmin],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
 })
@@ -23,8 +24,7 @@ export class Layout {
   ruta = inject(Ruta);
   private auth = inject(Auth);
 
-  // El botón "Taller" solo se muestra a los administradores
-  esAdmin = computed(() => this.sesion.usuario()?.perfil === 'administrador');
+  
 
   // Controla si se ve el modal de "reserva de nafta"
   avisoSesion = signal(false);

@@ -59,10 +59,10 @@
       <h2 id="alta-titulo">Alta de usuario</h2>
 
       <div class="grilla">
-        @for (c of campos; track c.control) {
+        @for (c of campos; track c.control; let primero = $first) {
           <div class="campo">
             <label [attr.for]="'alta-' + c.control">{{ c.etiqueta }}</label>
-            <input [id]="'alta-' + c.control" [type]="c.tipo" [formControlName]="c.control"
+            <input [appAutoFoco]="primero" [id]="'alta-' + c.control" [type]="c.tipo" [formControlName]="c.control"
                    autocomplete="off" [class.error]="error(c.control)">
             @if (error(c.control); as e) { <p class="msg-error">{{ e }}</p> }
           </div>

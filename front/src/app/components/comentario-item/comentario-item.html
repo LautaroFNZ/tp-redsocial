@@ -3,7 +3,7 @@
   <span class="autor">{{ c.autor.usuario }}</span>
 
   @if (editando()) {
-    <textarea [formControl]="texto" maxlength="300" rows="2" aria-label="Editar comentario"></textarea>
+      <textarea appAutoFoco [formControl]="texto" maxlength="300" rows="2" aria-label="Editar comentario"></textarea>
     @if (error(); as e) { <p class="msg-error">{{ e }}</p> }
     <div class="botones">
       <button type="button" class="chico" (click)="cancelar()">Cancelar</button>

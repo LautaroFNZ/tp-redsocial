@@ -13,11 +13,9 @@
          [routerLink]="p.autor._id === usuarioId() ? ['/mi-perfil'] : ['/garage', p.autor.usuario]">
         Ver garage de {{ p.autor.usuario }}
       </a>
-      @if (puedeBorrar(p)) {
-        <button class="btn ancho sacar" type="button" (click)="aBorrar.set(p)">
-          <app-luz-testigo tipo="mano" [marco]="false" [tamano]="18" /> Sacar de la ruta
-        </button>
-      }
+      <button *appSoloAdmin class="btn ancho sacar" type="button" (click)="aBorrar.set(p)">
+        <app-luz-testigo tipo="mano" [marco]="false" [tamano]="18" /> Sacar de la ruta
+      </button>
     } @else if (cargando()) {
       <span class="etiqueta">CARGANDO LA RUTA</span>
       <p>Precalentando…</p>

@@ -6,10 +6,11 @@ import { Comentario } from '../../shared/modelos';
 import { conContenido } from '../../shared/validators';
 import { mensajeDeError } from '../../shared/mensaje-error';
 import { HaceCuantoPipe } from '../../shared/pipes/hace-cuanto.pipe';
+import { AutoFoco } from '../../shared/directivas/auto-foco.directive';
 
 @Component({
   selector: 'app-comentario-item',
-  imports: [ReactiveFormsModule, HaceCuantoPipe],
+  imports: [ReactiveFormsModule, HaceCuantoPipe, AutoFoco],
   templateUrl: './comentario-item.html',
   styleUrl: './comentario-item.scss',
 })

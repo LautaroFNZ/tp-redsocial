@@ -17,6 +17,7 @@ import { PublicacionCard } from '../../components/publicacion-card/publicacion-c
 import { ComentarioItem } from '../../components/comentario-item/comentario-item';
 import { Pedal, Pedalera } from '../../components/pedalera/pedalera';
 import { Ruta } from '../../services/ruta';
+import { SoloAdmin } from '../../shared/directivas/solo-admin.directive';
 
 const POR_PAGINA = 5;
 
@@ -24,7 +25,7 @@ const POR_PAGINA = 5;
   selector: 'app-publicaciones',
   imports: [
     RouterLink, Avatar, Patente, LuzTestigo, ModalMensaje,
-    PublicacionCard, ComentarioItem, Pedalera,
+    PublicacionCard, ComentarioItem, Pedalera, SoloAdmin,
   ],
   templateUrl: './publicaciones.html',
   styleUrl: './publicaciones.scss',
@@ -211,11 +212,6 @@ export class Publicaciones {
     });
   }
 
-  // ---------- borrar (autor o admin) ----------
-  puedeBorrar(publicacion: Publicacion): boolean {
-    const usuario = this.sesion.usuario();
-    return !!usuario && usuario.perfil === 'administrador';
-  }
 
   confirmarBorrado() {
     const publicacion = this.aBorrar();

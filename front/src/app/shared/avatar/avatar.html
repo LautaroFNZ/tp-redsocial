@@ -4,7 +4,7 @@
      [style.font-size.px]="tamano() * 0.33"
      [style.background]="color()">
   @if (usuario().foto; as foto) {
-    <img [src]="foto" [alt]="'Foto de ' + usuario().nombre">
+    <img [src]="foto" appImagenRespaldo [alt]="'Foto de ' + usuario().nombre">
   } @else {
     {{ iniciales() }}
   }

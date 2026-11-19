@@ -11,13 +11,14 @@ import { mensajeDeError } from '../../shared/mensaje-error';
 import { Patente } from '../../shared/patente/patente';
 import { LuzTestigo } from '../../shared/luz-testigo/luz-testigo';
 import { Mensaje, ModalMensaje } from '../../shared/modal-mensaje/modal-mensaje';
+import { AutoFoco } from '../../shared/directivas/auto-foco.directive';
 
 type Filtro = 'todos' | 'habilitados' | 'deshabilitados';
 const MAX_FOTO_MB = 2;
 
 @Component({
   selector: 'app-taller-usuarios',
-  imports: [ReactiveFormsModule, Patente, LuzTestigo, ModalMensaje],
+  imports: [ReactiveFormsModule, Patente, LuzTestigo, ModalMensaje, AutoFoco],
   templateUrl: './taller-usuarios.html',
   styleUrl: './taller-usuarios.scss',
 })

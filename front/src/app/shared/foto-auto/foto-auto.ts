@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import { ImagenRespaldo } from '../directivas/imagen-respaldo.directive';
 
 @Component({
   selector: 'app-foto-auto',
