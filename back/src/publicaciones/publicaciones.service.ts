@@ -21,8 +21,8 @@ export class PublicacionesService {
   ) {}
 
   // ---------- POST /publicaciones ----------
-  async crear(dto: CrearPublicacionDto, imagen?: Express.Multer.File) {
-    await this.usuarioActivo(dto.autor);
+  async crear(dto: CrearPublicacionDto, autorId: string, imagen?: Express.Multer.File) {
+    await this.usuarioActivo(autorId);
 
     const imagenUrl = imagen
       ? await this.fileService.cloudinaryUploader(imagen, 'publicaciones')
@@ -32,7 +32,7 @@ export class PublicacionesService {
       titulo: dto.titulo,
       mensaje: dto.mensaje,
       imagen: imagenUrl,
-      autor: new Types.ObjectId(dto.autor),
+      autor: new Types.ObjectId(autorId),
     });
 
     return creada.populate('autor', CAMPOS_AUTOR);

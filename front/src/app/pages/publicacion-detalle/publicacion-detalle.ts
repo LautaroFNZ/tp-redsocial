@@ -139,7 +139,7 @@ export class PublicacionDetalle {
 
     this.enviando.set(true);
     this.errorNuevo.set(null);
-    this.comentariosApi.crear(publicacion._id, this.nuevo.value.trim(), usuario._id).subscribe({
+    this.comentariosApi.crear(publicacion._id, this.nuevo.value.trim()).subscribe({
       next: comentario => {
         this.enviando.set(false);
         this.nuevo.reset();
@@ -167,8 +167,8 @@ export class PublicacionDetalle {
     }
 
     const pedido = publicacion.meGusta.includes(usuario._id)
-      ? this.publicacionesApi.quitarMeGusta(publicacion._id, usuario._id)
-      : this.publicacionesApi.darMeGusta(publicacion._id, usuario._id);
+      ? this.publicacionesApi.quitarMeGusta(publicacion._id)
+      : this.publicacionesApi.darMeGusta(publicacion._id);
 
     this.procesandoLuces.set(true);
     pedido.subscribe({

@@ -14,13 +14,13 @@ export class ComentariosApi {
     return this.http.get<PaginaComentarios>(`${this.url}/publicaciones/${publicacionId}/comentarios`, { params });
   }
 
-  // POST /publicaciones/:id/comentarios
-  crear(publicacionId: string, mensaje: string, autor: string) {
-    return this.http.post<Comentario>(`${this.url}/publicaciones/${publicacionId}/comentarios`, { mensaje, autor });
+  // POST /publicaciones/:id/comentarios — el autor sale del token
+  crear(publicacionId: string, mensaje: string) {
+    return this.http.post<Comentario>(`${this.url}/publicaciones/${publicacionId}/comentarios`, { mensaje });
   }
 
-  // PUT /comentarios/:id → marca modificado: true
-  editar(id: string, mensaje: string, usuario: string) {
-    return this.http.put<Comentario>(`${this.url}/comentarios/${id}`, { mensaje, usuario });
+  // PUT /comentarios/:id → marca modificado: true. El usuario sale del token.
+  editar(id: string, mensaje: string) {
+    return this.http.put<Comentario>(`${this.url}/comentarios/${id}`, { mensaje });
   }
 }

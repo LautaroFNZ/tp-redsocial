@@ -120,7 +120,6 @@ export class Publicar {
     const datos = new FormData();
     datos.append('titulo', titulo.trim());
     datos.append('mensaje', mensaje.trim());
-    datos.append('autor', usuario._id); // sprint 3: sale del token
     const imagen = this.imagen();
     if (imagen) datos.append('imagen', imagen);
 

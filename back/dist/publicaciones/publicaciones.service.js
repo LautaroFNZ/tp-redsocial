@@ -26,8 +26,8 @@ let PublicacionesService = class PublicacionesService {
         this.usuariosService = usuariosService;
         this.fileService = fileService;
     }
-    async crear(dto, imagen) {
-        await this.usuarioActivo(dto.autor);
+    async crear(dto, autorId, imagen) {
+        await this.usuarioActivo(autorId);
         const imagenUrl = imagen
             ? await this.fileService.cloudinaryUploader(imagen, 'publicaciones')
             : null;
@@ -35,7 +35,7 @@ let PublicacionesService = class PublicacionesService {
             titulo: dto.titulo,
             mensaje: dto.mensaje,
             imagen: imagenUrl,
-            autor: new Types.ObjectId(dto.autor),
+            autor: new Types.ObjectId(autorId),
         });
         return creada.populate('autor', CAMPOS_AUTOR);
     }

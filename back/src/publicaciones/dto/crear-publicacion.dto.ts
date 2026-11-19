@@ -1,4 +1,4 @@
-import { IsMongoId, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class CrearPublicacionDto {
   @IsString()
@@ -10,8 +10,4 @@ export class CrearPublicacionDto {
   @IsNotEmpty({ message: 'El mensaje es obligatorio.' })
   @MaxLength(500, { message: 'El mensaje puede tener hasta 500 caracteres.' })
   mensaje: string;
-
-  // Sprint 2: viaja en el pedido. Sprint 3: sale del token.
-  @IsMongoId({ message: 'El autor no es válido.' })
-  autor: string;
 }

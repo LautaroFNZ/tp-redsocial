@@ -9,7 +9,7 @@ export declare class PublicacionesService {
     private readonly usuariosService;
     private readonly fileService;
     constructor(publicacionModel: Model<PublicacionDocument>, usuariosService: UsuariosService, fileService: FileService);
-    crear(dto: CrearPublicacionDto, imagen?: Express.Multer.File): Promise<import("mongoose").PopulateDocumentResult<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, Publicacion, {}, import("mongoose").DefaultSchemaOptions> & Publicacion & {
+    crear(dto: CrearPublicacionDto, autorId: string, imagen?: Express.Multer.File): Promise<import("mongoose").PopulateDocumentResult<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, Publicacion, {}, import("mongoose").DefaultSchemaOptions> & Publicacion & {
         _id: Types.ObjectId;
     } & {
         __v: number;

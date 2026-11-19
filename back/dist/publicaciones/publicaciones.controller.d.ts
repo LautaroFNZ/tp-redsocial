@@ -1,11 +1,10 @@
 import { PublicacionesService } from './publicaciones.service.js';
 import { CrearPublicacionDto } from './dto/crear-publicacion.dto.js';
 import { ListarPublicacionesDto } from './dto/listar-publicaciones.dto.js';
-import { AccionUsuarioDto } from './dto/accion-usuario.dto.js';
 export declare class PublicacionesController {
     private readonly publicacionesService;
     constructor(publicacionesService: PublicacionesService);
-    crear(dto: CrearPublicacionDto, imagen?: Express.Multer.File): Promise<import("mongoose").PopulateDocumentResult<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("./schemas/publicacion.schema.js").Publicacion, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/publicacion.schema.js").Publicacion & {
+    crear(dto: CrearPublicacionDto, autorId: string, imagen?: Express.Multer.File): Promise<import("mongoose").PopulateDocumentResult<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("./schemas/publicacion.schema.js").Publicacion, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/publicacion.schema.js").Publicacion & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
@@ -68,7 +67,7 @@ export declare class PublicacionesController {
         _id: import("mongoose").Types.ObjectId;
     }>>;
     eliminar(id: string, usuarioId: string): Promise<void>;
-    darMeGusta(id: string, dto: AccionUsuarioDto): Promise<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("./schemas/publicacion.schema.js").Publicacion, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/publicacion.schema.js").Publicacion & {
+    darMeGusta(id: string, usuarioId: string): Promise<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("./schemas/publicacion.schema.js").Publicacion, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/publicacion.schema.js").Publicacion & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
@@ -83,7 +82,7 @@ export declare class PublicacionesController {
     } & Required<{
         _id: import("mongoose").Types.ObjectId;
     }>>;
-    quitarMeGusta(id: string, dto: AccionUsuarioDto): Promise<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("./schemas/publicacion.schema.js").Publicacion, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/publicacion.schema.js").Publicacion & {
+    quitarMeGusta(id: string, usuarioId: string): Promise<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("./schemas/publicacion.schema.js").Publicacion, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/publicacion.schema.js").Publicacion & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;

@@ -52,7 +52,7 @@ export class ComentarioItem {
     }
 
     this.guardando.set(true);
-    this.api.editar(this.comentario()._id, this.texto.value.trim(), usuario._id).subscribe({
+    this.api.editar(this.comentario()._id, this.texto.value.trim()).subscribe({
       next: editado => {
         this.guardando.set(false);
         this.editando.set(false);

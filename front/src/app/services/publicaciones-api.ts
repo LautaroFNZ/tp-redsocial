@@ -33,12 +33,12 @@ export class PublicacionesApi {
     return this.http.delete<void>(`${this.url}/${id}`);
   }
 
-  // POST / DELETE /publicaciones/:id/me-gusta
-  darMeGusta(id: string, usuario: string) {
-    return this.http.post<Publicacion>(`${this.url}/${id}/me-gusta`, { usuario });
+  // POST / DELETE /publicaciones/:id/me-gusta — el usuario sale del token (lo agrega el interceptor)
+  darMeGusta(id: string) {
+    return this.http.post<Publicacion>(`${this.url}/${id}/me-gusta`, {});
   }
 
-  quitarMeGusta(id: string, usuario: string) {
-    return this.http.delete<Publicacion>(`${this.url}/${id}/me-gusta`, { body: { usuario } });
+  quitarMeGusta(id: string) {
+    return this.http.delete<Publicacion>(`${this.url}/${id}/me-gusta`);
   }
 }

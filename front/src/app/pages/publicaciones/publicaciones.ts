@@ -2,7 +2,6 @@ import {
   Component, DestroyRef, ElementRef, Injector, TemplateRef,
   afterNextRender, computed, effect, inject, signal, untracked, viewChild,
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PublicacionesApi } from '../../services/publicaciones-api';
 import { ComentariosApi } from '../../services/comentarios-api';
@@ -24,7 +23,7 @@ const POR_PAGINA = 5;
 @Component({
   selector: 'app-publicaciones',
   imports: [
-    DatePipe, RouterLink, Avatar, Patente, LuzTestigo, ModalMensaje,
+    RouterLink, Avatar, Patente, LuzTestigo, ModalMensaje,
     PublicacionCard, ComentarioItem, Pedalera,
   ],
   templateUrl: './publicaciones.html',
@@ -196,8 +195,8 @@ export class Publicaciones {
 
     const yaLeGusta = publicacion.meGusta.includes(usuario._id);
     const pedido = yaLeGusta
-      ? this.api.quitarMeGusta(publicacion._id, usuario._id)
-      : this.api.darMeGusta(publicacion._id, usuario._id);
+      ? this.api.quitarMeGusta(publicacion._id)
+      : this.api.darMeGusta(publicacion._id);
 
     this.procesandoId.set(publicacion._id);
     pedido.subscribe({

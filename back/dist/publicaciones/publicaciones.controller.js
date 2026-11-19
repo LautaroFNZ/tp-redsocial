@@ -15,7 +15,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { PublicacionesService } from './publicaciones.service.js';
 import { CrearPublicacionDto } from './dto/crear-publicacion.dto.js';
 import { ListarPublicacionesDto } from './dto/listar-publicaciones.dto.js';
-import { AccionUsuarioDto } from './dto/accion-usuario.dto.js';
 import { ParseMongoIdPipe } from '../common/parse-mongo-id.pipe.js';
 import { opcionesImagen } from '../archivos/opciones-imagen.js';
 import { AuthGuard } from '../auth/auth.guard.js';
@@ -25,8 +24,8 @@ let PublicacionesController = class PublicacionesController {
     constructor(publicacionesService) {
         this.publicacionesService = publicacionesService;
     }
-    crear(dto, imagen) {
-        return this.publicacionesService.crear(dto, imagen);
+    crear(dto, autorId, imagen) {
+        return this.publicacionesService.crear(dto, autorId, imagen);
     }
     listar(filtros) {
         return this.publicacionesService.listar(filtros);
@@ -37,20 +36,22 @@ let PublicacionesController = class PublicacionesController {
     eliminar(id, usuarioId) {
         return this.publicacionesService.eliminar(id, usuarioId);
     }
-    darMeGusta(id, dto) {
-        return this.publicacionesService.darMeGusta(id, dto.usuario);
+    darMeGusta(id, usuarioId) {
+        return this.publicacionesService.darMeGusta(id, usuarioId);
     }
-    quitarMeGusta(id, dto) {
-        return this.publicacionesService.quitarMeGusta(id, dto.usuario);
+    quitarMeGusta(id, usuarioId) {
+        return this.publicacionesService.quitarMeGusta(id, usuarioId);
     }
 };
 __decorate([
     Post(),
+    UseGuards(AuthGuard),
     UseInterceptors(FileInterceptor('imagen', opcionesImagen(4))),
     __param(0, Body()),
-    __param(1, UploadedFile()),
+    __param(1, UsuarioId()),
+    __param(2, UploadedFile()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CrearPublicacionDto, Object]),
+    __metadata("design:paramtypes", [CrearPublicacionDto, String, Object]),
     __metadata("design:returntype", void 0)
 ], PublicacionesController.prototype, "crear", null);
 __decorate([
@@ -79,18 +80,20 @@ __decorate([
 ], PublicacionesController.prototype, "eliminar", null);
 __decorate([
     Post(':id/me-gusta'),
+    UseGuards(AuthGuard),
     __param(0, Param('id', ParseMongoIdPipe)),
-    __param(1, Body()),
+    __param(1, UsuarioId()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, AccionUsuarioDto]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], PublicacionesController.prototype, "darMeGusta", null);
 __decorate([
     Delete(':id/me-gusta'),
+    UseGuards(AuthGuard),
     __param(0, Param('id', ParseMongoIdPipe)),
-    __param(1, Body()),
+    __param(1, UsuarioId()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, AccionUsuarioDto]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], PublicacionesController.prototype, "quitarMeGusta", null);
 PublicacionesController = __decorate([

@@ -41,13 +41,13 @@ export class ComentariosService {
   }
 
   // ---------- POST /publicaciones/:id/comentarios ----------
-  async crear(publicacionId: string, dto: CrearComentarioDto) {
+  async crear(publicacionId: string, dto: CrearComentarioDto, autorId: string) {
     await this.publicacionActivaOFalla(publicacionId);
-    await this.usuarioActivo(dto.autor);
+    await this.usuarioActivo(autorId);
 
     const creado = await this.comentarioModel.create({
       publicacion: new Types.ObjectId(publicacionId),
-      autor: new Types.ObjectId(dto.autor),
+      autor: new Types.ObjectId(autorId),
       mensaje: dto.mensaje,
     });
 
@@ -58,11 +58,11 @@ export class ComentariosService {
   }
 
   // ---------- PUT /comentarios/:id ----------
-  async editar(comentarioId: string, dto: EditarComentarioDto) {
+  async editar(comentarioId: string, dto: EditarComentarioDto, usuarioId: string) {
     const comentario = await this.comentarioModel.findById(comentarioId).exec();
     if (!comentario) throw new NotFoundException('El comentario no existe.');
 
-    if (!comentario.autor.equals(new Types.ObjectId(dto.usuario))) {
+    if (!comentario.autor.equals(new Types.ObjectId(usuarioId))) {
       throw new ForbiddenException('Solo el autor puede editar este comentario.');
     }
 
