@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Patente } from '../shared/patente/patente';
@@ -22,6 +22,9 @@ export class Layout {
   sesion = inject(Sesion);
   ruta = inject(Ruta);
   private auth = inject(Auth);
+
+  // El botón "Taller" solo se muestra a los administradores
+  esAdmin = computed(() => this.sesion.usuario()?.perfil === 'administrador');
 
   // Controla si se ve el modal de "reserva de nafta"
   avisoSesion = signal(false);

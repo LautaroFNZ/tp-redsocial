@@ -61,3 +61,26 @@ export interface RespuestaAuth {
   usuario: Usuario;
   token: string;
 }
+
+
+// ---------- Estadísticas (Taller) ----------
+export interface RangoFechas {
+  desde: string; // AAAA-MM-DD
+  hasta: string; // AAAA-MM-DD
+}
+
+export interface PublicacionesPorUsuario {
+  usuario: string;
+  cantidad: number;
+}
+
+export interface ComentariosPorDia {
+  fecha: string; // AAAA-MM-DD
+  cantidad: number;
+}
+
+export interface ComentariosPorPublicacion {
+  publicacion: string;
+  titulo: string;
+  cantidad: number;
+}

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { conSesion, sinSesion } from './guards/sesion.guard';
+import { esAdmin } from './guards/admin.guard';
 
 export const routes: Routes = [
   // Pantalla de carga: valida el token y redirige a la ruta o al login
@@ -53,6 +54,25 @@ export const routes: Routes = [
         path: 'publicacion/:id',
         title: 'Publicación · GarageHub',
         loadComponent: () => import('./pages/publicacion-detalle/publicacion-detalle').then(m => m.PublicacionDetalle),
+      },
+      // Taller (dashboard): solo administradores. Pestañas arriba y adentro la sección elegida
+      {
+        path: 'taller',
+        canActivate: [esAdmin],
+        loadComponent: () => import('./pages/taller/taller').then(m => m.Taller),
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'usuarios' },
+          {
+            path: 'usuarios',
+            title: 'Taller · usuarios · GarageHub',
+            loadComponent: () => import('./pages/taller-usuarios/taller-usuarios').then(m => m.TallerUsuarios),
+          },
+          {
+            path: 'estadisticas',
+            title: 'Taller · estadísticas · GarageHub',
+            loadComponent: () => import('./pages/taller-estadisticas/taller-estadisticas').then(m => m.TallerEstadisticas),
+          },
+        ],
       },
     ],
   },

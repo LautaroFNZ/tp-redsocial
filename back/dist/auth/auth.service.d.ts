@@ -1,14 +1,12 @@
 import { JwtService } from '@nestjs/jwt';
 import { UsuariosService } from '../usuarios/usuarios.service.js';
-import { FileService } from '../archivos/file.service.js';
 import { RegistroDto } from './dto/registro.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import type { TokenPayload } from './token-payload.js';
 export declare class AuthService {
     private readonly usuariosService;
-    private readonly fileService;
     private readonly jwtService;
-    constructor(usuariosService: UsuariosService, fileService: FileService, jwtService: JwtService);
+    constructor(usuariosService: UsuariosService, jwtService: JwtService);
     registro(dto: RegistroDto, foto?: Express.Multer.File): Promise<{
         usuario: import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("../usuarios/schemas/usuario.schema.js").Usuario, {}, import("mongoose").DefaultSchemaOptions> & import("../usuarios/schemas/usuario.schema.js").Usuario & {
             _id: import("mongoose").Types.ObjectId;

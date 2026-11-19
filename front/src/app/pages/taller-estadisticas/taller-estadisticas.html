@@ -1,0 +1,61 @@
+<section class="estadisticas" [class.cargando]="cargando()">
+  <h1>Taller · estadísticas</h1>
+
+  <!-- Lapso: un solo filtro para los 3 gráficos -->
+  <form class="tarjeta lapso" [formGroup]="form" (ngSubmit)="cargar()" novalidate>
+    <b>Lapso</b>
+    <div class="campo">
+      <label for="est-desde">Desde</label>
+      <input id="est-desde" type="date" formControlName="desde" [max]="hoy" (change)="cambioManual()">
+    </div>
+    <div class="campo">
+      <label for="est-hasta">Hasta</label>
+      <input id="est-hasta" type="date" formControlName="hasta" [max]="hoy" (change)="cambioManual()">
+    </div>
+    <div class="atajos" role="group" aria-label="Lapsos rápidos">
+      @for (a of atajos; track a.dias) {
+        <button class="btn" type="button" [class.amarillo]="atajo() === a.dias"
+                [attr.aria-pressed]="atajo() === a.dias" (click)="elegirAtajo(a.dias)">
+          {{ a.texto }}
+        </button>
+      }
+    </div>
+    @if (form.hasError('rangoInvertido')) {
+      <p class="msg-error ancho">La fecha "desde" no puede ser posterior a "hasta".</p>
+    } @else if (form.invalid) {
+      <p class="msg-error ancho">Elegí las dos fechas.</p>
+    }
+  </form>
+
+  <div class="tablero">
+    <article class="tarjeta">
+      <h2>Publicaciones por usuario</h2>
+      <p class="resumen">{{ totalPublicaciones() }} en el lapso</p>
+      @if (tortaUsuarios().valores.length) {
+        <app-grafico tipo="pie" titulo="Publicaciones" [etiquetas]="tortaUsuarios().etiquetas" [valores]="tortaUsuarios().valores" />
+      } @else {
+        <p class="vacio">Nadie publicó en este lapso.</p>
+      }
+    </article>
+
+    <article class="tarjeta">
+      <h2>Comentarios por publicación</h2>
+      <p class="resumen">Las {{ barrasPublicaciones().valores.length || '' }} más comentadas</p>
+      @if (barrasPublicaciones().valores.length) {
+        <app-grafico tipo="bar" titulo="Comentarios" [etiquetas]="barrasPublicaciones().etiquetas" [valores]="barrasPublicaciones().valores" />
+      } @else {
+        <p class="vacio">Ninguna publicación recibió comentarios en este lapso.</p>
+      }
+    </article>
+
+    <article class="tarjeta ancho">
+      <h2>Comentarios por día</h2>
+      <p class="resumen">{{ totalComentarios() }} en el lapso</p>
+      <app-grafico tipo="line" titulo="Comentarios" [etiquetas]="linea().etiquetas" [valores]="linea().valores" />
+    </article>
+  </div>
+</section>
+
+@if (modal(); as m) {
+  <app-modal-mensaje [titulo]="m.titulo" [mensaje]="m.mensaje" [tipo]="m.tipo" (cerrar)="modal.set(null)" />
+}

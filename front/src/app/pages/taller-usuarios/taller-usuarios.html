@@ -1,0 +1,147 @@
+<section class="taller">
+  <header class="cabecera">
+    <h1>Taller · usuarios <span class="cantidad">({{ usuarios().length }})</span></h1>
+    <button class="btn amarillo" type="button" (click)="abrirAlta()">+ Alta de usuario</button>
+  </header>
+
+  <div class="filtros" role="group" aria-label="Filtrar usuarios">
+    @for (f of filtros; track f.valor) {
+      <button class="btn" type="button" [class.activo]="filtro() === f.valor"
+              [attr.aria-pressed]="filtro() === f.valor" (click)="filtro.set(f.valor)">
+        {{ f.texto }}
+      </button>
+    }
+  </div>
+
+  @if (cargando()) {
+    <p class="vacio">Abriendo el portón…</p>
+  } @else {
+    <ul class="lista">
+      @for (u of visibles(); track u._id) {
+        @let inhibido = u.activo === false;
+        <li class="fila" [class.inhibido]="inhibido">
+          <app-patente [texto]="u.usuario" />
+          <div class="datos">
+            <b>{{ u.nombre }} {{ u.apellido }}</b>
+            <span>{{ u.correo }}</span>
+          </div>
+          <span class="perfil" [class.admin]="u.perfil === 'administrador'">
+            {{ u.perfil === 'administrador' ? 'ADMIN' : 'USUARIO' }}
+          </span>
+          <span class="estado">
+            <span class="luz" [class.roja]="inhibido" aria-hidden="true"></span>
+            {{ inhibido ? 'Inhibido' : 'En ruta' }}
+          </span>
+          <div class="accion">
+            @if (u._id === miId()) {
+              <span class="vos">(vos)</span>
+            } @else if (inhibido) {
+              <button class="btn verde" type="button" [disabled]="procesandoId() === u._id"
+                      (click)="habilitar(u)">Habilitar</button>
+            } @else {
+              <button class="btn rojo" type="button" [disabled]="procesandoId() === u._id"
+                      (click)="aDeshabilitar.set(u)">Deshabilitar</button>
+            }
+          </div>
+        </li>
+      } @empty {
+        <li class="vacio">No hay usuarios con ese filtro.</li>
+      }
+    </ul>
+  }
+</section>
+
+<!-- Alta de usuario: modal con el formulario de registro + perfil -->
+@if (formAbierto()) {
+  <div class="fondo" (click)="formAbierto.set(false)">
+    <form class="caja" role="dialog" aria-modal="true" aria-labelledby="alta-titulo"
+          [formGroup]="form" (ngSubmit)="darDeAlta()" (click)="$event.stopPropagation()" novalidate>
+      <h2 id="alta-titulo">Alta de usuario</h2>
+
+      <div class="grilla">
+        @for (c of campos; track c.control) {
+          <div class="campo">
+            <label [attr.for]="'alta-' + c.control">{{ c.etiqueta }}</label>
+            <input [id]="'alta-' + c.control" [type]="c.tipo" [formControlName]="c.control"
+                   autocomplete="off" [class.error]="error(c.control)">
+            @if (error(c.control); as e) { <p class="msg-error">{{ e }}</p> }
+          </div>
+        }
+
+        <div class="campo">
+          <label for="alta-password">Contraseña</label>
+          <input id="alta-password" type="password" formControlName="password" autocomplete="new-password"
+                 [class.error]="error('password')">
+          @let password = form.controls.password;
+          @if (password.dirty || enviado()) {
+            <ul class="reglas">
+              @for (regla of reglas; track regla.error) {
+                <li [class.ok]="!password.hasError(regla.error)">
+                  {{ password.hasError(regla.error) ? '✕' : '✓' }} {{ regla.texto }}
+                </li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="campo">
+          <label for="alta-repetir">Repetir contraseña</label>
+          <input id="alta-repetir" type="password" formControlName="repetirPassword" autocomplete="new-password"
+                 [class.error]="errorRepetir()">
+          @if (errorRepetir(); as e) { <p class="msg-error">{{ e }}</p> }
+        </div>
+
+        <div class="campo">
+          <label for="alta-fecha">Fecha de nacimiento</label>
+          <input id="alta-fecha" type="date" formControlName="fechaNacimiento" [max]="hoy"
+                 [class.error]="error('fechaNacimiento')">
+          @if (error('fechaNacimiento'); as e) { <p class="msg-error">{{ e }}</p> }
+        </div>
+
+        <div class="campo">
+          <label for="alta-foto">Foto de perfil (opcional)</label>
+          <input id="alta-foto" class="archivo" type="file" accept="image/*" (change)="elegirFoto($event)">
+          @if (errorFoto(); as e) { <p class="msg-error">{{ e }}</p> }
+        </div>
+
+        <div class="campo ancho-completo">
+          <label for="alta-descripcion">Descripción breve</label>
+          <textarea id="alta-descripcion" formControlName="descripcion" maxlength="200"
+                    [class.error]="error('descripcion')"></textarea>
+          @if (error('descripcion'); as e) { <p class="msg-error">{{ e }}</p> }
+        </div>
+
+        <fieldset class="perfiles ancho-completo">
+          <legend>Perfil</legend>
+          <label><input type="radio" formControlName="perfil" value="usuario"> Usuario</label>
+          <label><input type="radio" formControlName="perfil" value="administrador"> Administrador</label>
+        </fieldset>
+      </div>
+
+      <div class="botones">
+        <button class="btn" type="button" (click)="formAbierto.set(false)">Cancelar</button>
+        <button class="btn verde" type="submit" [disabled]="guardando()">
+          @if (guardando()) {
+            <app-luz-testigo tipo="bujia" [marco]="false" [tamano]="18" /> Guardando…
+          } @else {
+            Dar de alta
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+}
+
+@if (aDeshabilitar(); as u) {
+  <app-modal-mensaje
+    tipo="peligro"
+    titulo="¿Inhibís esta patente?"
+    [mensaje]="u.usuario + ' no va a poder entrar a GarageHub hasta que lo vuelvas a habilitar.'"
+    textoConfirmar="Sí, deshabilitar"
+    (cerrar)="aDeshabilitar.set(null)"
+    (confirmar)="confirmarDeshabilitar()" />
+}
+
+@if (modal(); as m) {
+  <app-modal-mensaje [titulo]="m.titulo" [mensaje]="m.mensaje" [tipo]="m.tipo" (cerrar)="modal.set(null)" />
+}
