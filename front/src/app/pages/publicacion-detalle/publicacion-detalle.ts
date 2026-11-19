@@ -2,7 +2,7 @@ import { Component, DestroyRef, TemplateRef, afterNextRender, computed, inject, 
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { PublicacionesApi } from '../../services/publicaciones-api';
 import { ComentariosApi } from '../../services/comentarios-api';
@@ -31,6 +31,7 @@ const COMENTARIOS_POR_PAGINA = 5;
 })
 export class PublicacionDetalle {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private publicacionesApi = inject(PublicacionesApi);
   private comentariosApi = inject(ComentariosApi);
   private panel = inject(PanelLateral);
@@ -59,6 +60,26 @@ export class PublicacionDetalle {
   errorNuevo = signal<string | null>(null);
 
   usuarioId = computed(() => this.sesion.usuario()?._id ?? null);
+
+  aBorrar = signal(false);
+
+  puedeBorrar = computed(() => {
+    const usuario = this.sesion.usuario();
+    const p = this.publicacion();
+    return !!usuario && !!p && (p.autor._id === usuario._id || usuario.perfil === 'administrador');
+  });
+
+  borrar() {
+    const p = this.publicacion();
+    if (!p) return;
+    this.publicacionesApi.eliminar(p._id).subscribe({
+      next: () => this.router.navigate(['/publicaciones']),
+      error: error => {
+        this.aBorrar.set(false);
+        this.modal.set({ tipo: 'error', titulo: 'No pudimos sacarlo', mensaje: mensajeDeError(error) });
+      },
+    });
+  }
 
   constructor() {
     this.route.paramMap

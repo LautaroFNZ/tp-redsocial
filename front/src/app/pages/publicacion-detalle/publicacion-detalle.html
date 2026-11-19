@@ -1,3 +1,4 @@
+<!-- Tarjeta de la columna izquierda: "Publicado por" -->
 <ng-template #autor>
   @if (publicacion(); as p) {
     <aside class="tarjeta autor">
@@ -24,7 +25,7 @@
   </div>
 } @else if (publicacion(); as p) {
   <div class="detalle">
-       <!-- Centro: la publicación en grande -->
+    <!-- Centro: la publicación en grande -->
     <div class="marco">
       <div class="asfalto">
         <a class="volver" routerLink="/publicaciones">← Volver a la ruta</a>
@@ -67,6 +68,13 @@
               </span>
             </div>
           </article>
+        }
+
+        <!-- Borrar: solo el dueño o un admin. Va afuera del if/else, así sirve con foto y sin foto -->
+        @if (puedeBorrar()) {
+          <button class="btn ancho sacar" type="button" (click)="aBorrar.set(true)">
+            <app-luz-testigo tipo="mano" [marco]="false" [tamano]="18" /> Sacar de la ruta
+          </button>
         }
       </div>
     </div>
@@ -114,4 +122,14 @@
 
 @if (modal(); as m) {
   <app-modal-mensaje [titulo]="m.titulo" [mensaje]="m.mensaje" [tipo]="m.tipo" (cerrar)="modal.set(null)" />
+}
+
+@if (aBorrar()) {
+  <app-modal-mensaje
+    tipo="peligro"
+    titulo="¿Sacás este auto de la ruta?"
+    mensaje="Esta publicación deja de aparecer en la ruta y en el garage. No se puede deshacer."
+    textoConfirmar="Sí, sacarlo"
+    (cerrar)="aBorrar.set(false)"
+    (confirmar)="borrar()" />
 }

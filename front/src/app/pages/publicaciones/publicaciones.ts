@@ -215,7 +215,7 @@ export class Publicaciones {
   // ---------- borrar (autor o admin) ----------
   puedeBorrar(publicacion: Publicacion): boolean {
     const usuario = this.sesion.usuario();
-    return !!usuario && (publicacion.autor._id === usuario._id || usuario.perfil === 'administrador');
+    return !!usuario && usuario.perfil === 'administrador';
   }
 
   confirmarBorrado() {
@@ -223,7 +223,7 @@ export class Publicaciones {
     const usuario = this.sesion.usuario();
     if (!publicacion || !usuario) return;
 
-    this.api.eliminar(publicacion._id, usuario._id).subscribe({
+    this.api.eliminar(publicacion._id).subscribe({
       next: () => {
         this.aBorrar.set(null);
         this.lista.update(l => l.filter(p => p._id !== publicacion._id));

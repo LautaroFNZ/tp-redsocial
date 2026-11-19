@@ -1,7 +1,7 @@
 import { Component, computed, input, output } from '@angular/core';
 import { LuzTestigo, TipoLuz } from '../luz-testigo/luz-testigo';
 
-export type TipoMensaje = 'ok' | 'error' | 'peligro' | 'sesion';
+export type TipoMensaje = 'ok' | 'error' | 'peligro' | 'sesion' | 'nafta';
 
 export interface Mensaje {
   titulo: string;
@@ -14,6 +14,7 @@ const LUCES: Record<TipoMensaje, TipoLuz> = {
   error: 'motor',   // check engine
   peligro: 'mano',  // freno de mano: confirmar algo que no se deshace
   sesion: 'cinturon', // hace falta iniciar sesión
+  nafta: 'nafta',   // reserva: la sesión está por vencer
 };
 
 @Component({

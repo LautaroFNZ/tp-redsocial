@@ -28,9 +28,9 @@ export class PublicacionesApi {
     return this.http.post<Publicacion>(this.url, datos);
   }
 
-  // DELETE /publicaciones/:id → baja lógica
-  eliminar(id: string, usuario: string) {
-    return this.http.delete<void>(`${this.url}/${id}`, { body: { usuario } });
+  // DELETE /publicaciones/:id — el usuario sale del token (lo agrega el interceptor), no del body
+  eliminar(id: string) {
+    return this.http.delete<void>(`${this.url}/${id}`);
   }
 
   // POST / DELETE /publicaciones/:id/me-gusta

@@ -176,3 +176,10 @@
   font-family: var(--fuente-titulo);
   font-size: 13px;
 }
+
+.btn.sacar {
+  margin-top: 20px;
+  background: var(--blanco);
+  color: var(--rojo);
+  border-color: var(--rojo);
+}

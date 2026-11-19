@@ -12,6 +12,11 @@
         <button class="btn" type="button" (click)="cerrar.emit()" autofocus>Cancelar</button>
         <button class="btn rojo" type="button" (click)="confirmar.emit()">{{ textoConfirmar() }}</button>
       </div>
+    } @else if (tipo() === 'nafta') {
+      <div class="botones">
+        <button class="btn" type="button" (click)="cerrar.emit()">Ahora no</button>
+        <button class="btn amarillo" type="button" (click)="confirmar.emit()" autofocus>{{ textoConfirmar() }}</button>
+      </div>
     } @else {
       <button class="btn amarillo" type="button" (click)="cerrar.emit()" autofocus>Entendido</button>
     }

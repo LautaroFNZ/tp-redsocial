@@ -181,6 +181,6 @@ export class Registro {
   cerrarModal() {
     const exito = this.modal()?.tipo === 'ok';
     this.modal.set(null);
-    if (exito) this.router.navigate(['/publicaciones']);
+    if (exito) this.router.navigate(['/']);
   }
 }

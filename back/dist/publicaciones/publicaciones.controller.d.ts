@@ -67,7 +67,7 @@ export declare class PublicacionesController {
     } & Required<{
         _id: import("mongoose").Types.ObjectId;
     }>>;
-    eliminar(id: string, dto: AccionUsuarioDto): Promise<void>;
+    eliminar(id: string, usuarioId: string): Promise<void>;
     darMeGusta(id: string, dto: AccionUsuarioDto): Promise<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("./schemas/publicacion.schema.js").Publicacion, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/publicacion.schema.js").Publicacion & {
         _id: import("mongoose").Types.ObjectId;
     } & {

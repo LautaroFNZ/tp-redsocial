@@ -59,10 +59,10 @@ export class MiPerfil {
     return !!duenio && !!yo && duenio._id === yo._id;
   });
 
-  // Borrar: el dueño del garage o un administrador
+  // Borrar: solo administrador
   puedeBorrar = computed(() => {
     const yo = this.sesion.usuario();
-    return !!yo && (this.esPropio() || yo.perfil === 'administrador');
+    return !!yo && yo.perfil === 'administrador';
   });
 
   // ---------- pisos ----------
@@ -190,7 +190,7 @@ export class MiPerfil {
     const yo = this.sesion.usuario();
     if (!publicacion || !yo) return;
 
-    this.publicacionesApi.eliminar(publicacion._id, yo._id).subscribe({
+    this.publicacionesApi.eliminar(publicacion._id).subscribe({
       next: () => {
         this.aBorrar.set(null);
         this.modal.set({ tipo: 'ok', titulo: 'Auto fuera del garage', mensaje: `"${publicacion.titulo}" ya no aparece.` });

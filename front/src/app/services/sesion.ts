@@ -29,6 +29,19 @@ export class Sesion {
     try { localStorage.setItem(CLAVE_TOKEN, token); } catch { /* nada */ }
   }
 
+  // Lee el "exp" del token (cuándo vence, en segundos) y devuelve cuántos
+  // milisegundos faltan para eso. Devuelve 0 si no hay token o no se puede leer.
+  msHastaVencer(): number {
+    const token = this.tokenActual();
+    if (!token) return 0;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp ? payload.exp * 1000 - Date.now() : 0;
+    } catch {
+      return 0;
+    }
+  }
+
   cerrar() {
     this.actual.set(null);
     this.tokenActual.set(null);

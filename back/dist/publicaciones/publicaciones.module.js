@@ -14,6 +14,7 @@ import { Publicacion, PublicacionSchema } from './schemas/publicacion.schema.js'
 import { Comentario, ComentarioSchema } from './schemas/comentario.schema.js';
 import { UsuariosModule } from '../usuarios/usuarios.module.js';
 import { ArchivosModule } from '../archivos/archivos.module.js';
+import { AuthModule } from '../auth/auth.module.js';
 let PublicacionesModule = class PublicacionesModule {
 };
 PublicacionesModule = __decorate([
@@ -25,6 +26,7 @@ PublicacionesModule = __decorate([
             ]),
             UsuariosModule,
             ArchivosModule,
+            AuthModule,
         ],
         controllers: [PublicacionesController, ComentariosController],
         providers: [PublicacionesService, ComentariosService],

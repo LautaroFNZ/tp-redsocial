@@ -1,6 +1,6 @@
 import {
   Body, Controller, Delete, Get, HttpCode, HttpStatus, Param,
-  Post, Query, UploadedFile, UseInterceptors,
+  Post, Query, UploadedFile, UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PublicacionesService } from './publicaciones.service.js';
@@ -9,6 +9,8 @@ import { ListarPublicacionesDto } from './dto/listar-publicaciones.dto.js';
 import { AccionUsuarioDto } from './dto/accion-usuario.dto.js';
 import { ParseMongoIdPipe } from '../common/parse-mongo-id.pipe.js';
 import { opcionesImagen } from '../archivos/opciones-imagen.js';
+import { AuthGuard } from '../auth/auth.guard.js';
+import { UsuarioId } from '../auth/usuario-actual.decorator.js';
 
 @Controller('publicaciones')
 export class PublicacionesController {
@@ -33,11 +35,12 @@ export class PublicacionesController {
     return this.publicacionesService.obtener(id);
   }
 
-  // DELETE /publicaciones/:id → 204 (baja lógica)
+  // DELETE /publicaciones/:id → 204 (baja lógica). Lleva guard: el usuario sale del token, no del body.
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  eliminar(@Param('id', ParseMongoIdPipe) id: string, @Body() dto: AccionUsuarioDto) {
-    return this.publicacionesService.eliminar(id, dto.usuario);
+  @UseGuards(AuthGuard)
+  eliminar(@Param('id', ParseMongoIdPipe) id: string, @UsuarioId() usuarioId: string) {
+    return this.publicacionesService.eliminar(id, usuarioId);
   }
 
   // POST /publicaciones/:id/me-gusta → 201

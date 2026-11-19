@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, UploadedFile, UseInterceptors, } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, UploadedFile, UseGuards, UseInterceptors, } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PublicacionesService } from './publicaciones.service.js';
 import { CrearPublicacionDto } from './dto/crear-publicacion.dto.js';
@@ -18,6 +18,8 @@ import { ListarPublicacionesDto } from './dto/listar-publicaciones.dto.js';
 import { AccionUsuarioDto } from './dto/accion-usuario.dto.js';
 import { ParseMongoIdPipe } from '../common/parse-mongo-id.pipe.js';
 import { opcionesImagen } from '../archivos/opciones-imagen.js';
+import { AuthGuard } from '../auth/auth.guard.js';
+import { UsuarioId } from '../auth/usuario-actual.decorator.js';
 let PublicacionesController = class PublicacionesController {
     publicacionesService;
     constructor(publicacionesService) {
@@ -32,8 +34,8 @@ let PublicacionesController = class PublicacionesController {
     obtener(id) {
         return this.publicacionesService.obtener(id);
     }
-    eliminar(id, dto) {
-        return this.publicacionesService.eliminar(id, dto.usuario);
+    eliminar(id, usuarioId) {
+        return this.publicacionesService.eliminar(id, usuarioId);
     }
     darMeGusta(id, dto) {
         return this.publicacionesService.darMeGusta(id, dto.usuario);
@@ -68,10 +70,11 @@ __decorate([
 __decorate([
     Delete(':id'),
     HttpCode(HttpStatus.NO_CONTENT),
+    UseGuards(AuthGuard),
     __param(0, Param('id', ParseMongoIdPipe)),
-    __param(1, Body()),
+    __param(1, UsuarioId()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, AccionUsuarioDto]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], PublicacionesController.prototype, "eliminar", null);
 __decorate([
