@@ -30,7 +30,7 @@
   <app-modal-mensaje
     tipo="nafta"
     titulo="Reserva de nafta"
-    mensaje="Tu sesión entra en reserva: te quedan unos 5 minutos antes de que se agote. ¿Querés cargar nafta y seguir en ruta?"
+    [mensaje]="mensajeAviso()"
     textoConfirmar="Cargar y seguir"
     (confirmar)="extenderSesion()"
     (cerrar)="rechazarAviso()" />
