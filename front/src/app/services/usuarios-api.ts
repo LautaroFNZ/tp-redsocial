@@ -13,6 +13,11 @@ export class UsuariosApi {
     return this.http.get<Autor>(`${this.url}/${encodeURIComponent(usuario)}`);
   }
 
+  // PATCH /usuarios/perfil → mis datos actualizados (FormData porque puede llevar foto nueva)
+  editarPerfil(datos: FormData) {
+    return this.http.patch<Usuario>(`${this.url}/perfil`, datos);
+  }
+
   // ---------- Taller (solo admin; el token lo agrega el interceptor) ----------
 
   // GET /usuarios → todos los usuarios

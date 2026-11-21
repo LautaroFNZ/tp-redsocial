@@ -29,6 +29,13 @@ export class Sesion {
     try { localStorage.setItem(CLAVE_TOKEN, token); } catch { /* nada */ }
   }
 
+  // Al editar el perfil cambian los datos del usuario; el token sigue igual
+  actualizarUsuario(usuario: Usuario) {
+    this.actual.set(usuario);
+    try { localStorage.setItem(CLAVE_USUARIO, JSON.stringify(usuario)); } catch { /* nada */ }
+  }
+
+
   // Lee el "exp" del token (cuándo vence, en segundos) y devuelve cuántos
   // milisegundos faltan para eso. Devuelve 0 si no hay token o no se puede leer.
   msHastaVencer(): number {

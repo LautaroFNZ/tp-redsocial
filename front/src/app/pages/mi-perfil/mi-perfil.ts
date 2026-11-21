@@ -19,6 +19,7 @@ import { Mensaje, ModalMensaje } from '../../shared/modal-mensaje/modal-mensaje'
 import { RecortarPipe } from '../../shared/pipes/recortar.pipe';
 import { EdadPipe } from '../../shared/pipes/edad.pipe';
 import { SoloAdmin } from '../../shared/directivas/solo-admin.directive';
+import { EditarPerfil } from '../../components/editar-perfil/editar-perfil';
 
 // El dueño del garage: si es el propio trae también correo y fecha de nacimiento
 type Duenio = Autor & Partial<Pick<Usuario, 'correo' | 'fechaNacimiento'>>;
@@ -31,7 +32,7 @@ const POR_PISO = 3;
   selector: 'app-mi-perfil',
   imports: [
     DatePipe, RouterLink, Avatar, Patente, FotoAuto, LuzTestigo, SinSesion, ModalMensaje,
-    RecortarPipe, EdadPipe, SoloAdmin,
+    RecortarPipe, EdadPipe, SoloAdmin, EditarPerfil,
   ],
   templateUrl: './mi-perfil.html',
   styleUrl: './mi-perfil.scss',
@@ -56,6 +57,10 @@ export class MiPerfil {
   noEncontrado = signal(false);
   modal = signal<Mensaje | null>(null);
   aBorrar = signal<Publicacion | null>(null);
+  editando = signal(false); // modal "Registro automotor" (editar perfil)
+
+  // Para el modal de edición: mis datos completos (los de la sesión)
+  yo = this.sesion.usuario;
 
   private pedido = 0; // para ignorar respuestas viejas si se cambia de piso rápido
 
@@ -183,6 +188,14 @@ export class MiPerfil {
       publicaciones.forEach((p, i) => (mapa[p._id] = paginas[i].comentarios));
       this.comentariosDe.set(mapa);
     });
+  }
+
+  // El modal ya guardó y actualizó la sesión: refrescamos la ficha y las cocheras (el avatar de cada auto)
+  perfilGuardado(usuario: Usuario) {
+    this.editando.set(false);
+    this.duenio.set(usuario);
+    this.cargarPublicaciones();
+    this.modal.set({ tipo: 'ok', titulo: 'Datos actualizados', mensaje: 'Tu ficha ya muestra los datos nuevos.' });
   }
 
   confirmarBorrado() {

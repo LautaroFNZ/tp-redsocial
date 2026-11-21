@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import { Usuario, UsuarioDocument } from './schemas/usuario.schema.js';
 import { FileService } from '../archivos/file.service.js';
 import { RegistroDto } from '../auth/dto/registro.dto.js';
+import { EditarPerfilDto } from './dto/editar-perfil.dto.js';
 
 const EDAD_MINIMA = 13;
 const EDAD_MAXIMA = 100;
@@ -91,6 +92,24 @@ export class UsuariosService {
       .findOne({ usuario: usuario.trim().toLowerCase(), activo: true })
       .select('nombre apellido usuario foto descripcion perfil')
       .exec();
+  }
+
+  // ---------- editar perfil (cada usuario el suyo) ----------
+  // Cambia nombre, apellido y descripción; si viene foto, la sube a Cloudinary y reemplaza la anterior
+  async editarPerfil(id: string, dto: EditarPerfilDto, foto?: Express.Multer.File) {
+    const cambios: Partial<Usuario> = {
+      nombre: dto.nombre,
+      apellido: dto.apellido,
+      descripcion: dto.descripcion,
+    };
+    if (foto) cambios.foto = await this.fileService.cloudinaryUploader(foto);
+
+    // runValidators: aplica también las reglas del schema (maxlength, trim) al actualizar
+    const usuario = await this.usuarioModel
+      .findOneAndUpdate({ _id: id, activo: true }, cambios, { new: true, runValidators: true })
+      .exec();
+    if (!usuario) throw new NotFoundException('El usuario no existe o está deshabilitado.');
+    return usuario;
   }
 
   // ---------- dashboard del administrador ----------

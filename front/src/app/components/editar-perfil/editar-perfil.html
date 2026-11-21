@@ -1,0 +1,58 @@
+<div class="fondo" (click)="cancelar()">
+  <form class="caja" role="dialog" aria-modal="true" aria-labelledby="editar-titulo"
+        [formGroup]="form" (ngSubmit)="guardar()" (click)="$event.stopPropagation()" novalidate>
+    <span class="sello">REGISTRO AUTOMOTOR</span>
+    <h2 id="editar-titulo">Actualizar datos del titular</h2>
+
+    <div class="cuerpo">
+      <div class="foto">
+        <app-avatar [usuario]="vistaPrevia()" [tamano]="96" />
+        <label class="elegir-foto">
+          📷 Cambiar foto
+          <input type="file" accept="image/*" (change)="elegirFoto($event)">
+        </label>
+        @if (errorFoto(); as e) { <p class="msg-error">{{ e }}</p> }
+      </div>
+
+      <div class="campos">
+        <div class="fila">
+          <div class="campo">
+            <label for="editar-nombre">Nombre</label>
+            <input id="editar-nombre" type="text" formControlName="nombre" autocomplete="given-name"
+                   appAutoFoco [class.error]="error('nombre')">
+            @if (error('nombre'); as e) { <p class="msg-error">{{ e }}</p> }
+          </div>
+          <div class="campo">
+            <label for="editar-apellido">Apellido</label>
+            <input id="editar-apellido" type="text" formControlName="apellido" autocomplete="family-name"
+                   [class.error]="error('apellido')">
+            @if (error('apellido'); as e) { <p class="msg-error">{{ e }}</p> }
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="editar-descripcion">Descripción</label>
+          <textarea id="editar-descripcion" formControlName="descripcion" maxlength="200"
+                    placeholder="Contá qué fierros tenés…" [class.error]="error('descripcion')"></textarea>
+          <p class="contador">{{ largoDescripcion() }} / 200</p>
+          @if (error('descripcion'); as e) { <p class="msg-error">{{ e }}</p> }
+        </div>
+      </div>
+    </div>
+
+    @if (errorServidor(); as e) {
+      <p class="msg-error servidor">{{ e }}</p>
+    }
+
+    <div class="botones">
+      <button class="btn" type="button" (click)="cancelar()" [disabled]="guardando()">Cancelar</button>
+      <button class="btn verde" type="submit" [disabled]="guardando()">
+        @if (guardando()) {
+          <app-luz-testigo tipo="bujia" [marco]="false" [tamano]="18" /> Guardando…
+        } @else {
+          Guardar cambios
+        }
+      </button>
+    </div>
+  </form>
+</div>

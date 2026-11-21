@@ -11,13 +11,13 @@ import { ArchivosModule } from '../archivos/archivos.module.js';
   imports: [
     UsuariosModule,
     ArchivosModule,
-    // Configura el JWT: la clave sale del .env y el token vence a los 15 minutos (lo pide la consigna) || Se paso a 30 segundos para entrega.
+    // Configura el JWT: la clave sale del .env y el token vence a los 15 minutos
     JwtModule.registerAsync({
       global: true, // así JwtService está disponible en toda la app
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.getOrThrow<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '60s' },
+        signOptions: { expiresIn: '15m' },
       }),
     }),
   ],

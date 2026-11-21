@@ -1,10 +1,11 @@
 import {
   Body, Controller, Delete, Get, NotFoundException, Param,
-  Post, HttpCode, HttpStatus, UploadedFile, UseGuards, UseInterceptors,
+  Post, HttpCode, HttpStatus, UploadedFile, UseGuards, UseInterceptors, Patch
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsuariosService } from './usuarios.service.js';
 import { CrearUsuarioDto } from './dto/crear-usuario.dto.js';
+import { EditarPerfilDto } from './dto/editar-perfil.dto.js';
 import { AuthGuard } from '../auth/auth.guard.js';
 import { AdminGuard } from '../auth/admin.guard.js';
 import { UsuarioId } from '../auth/usuario-actual.decorator.js';
@@ -50,6 +51,20 @@ export class UsuariosController {
   }
 
   // ---------- con sesión ----------
+  
+  // PATCH /usuarios/perfil → 200 con mis datos actualizados
+  // El id sale del token (no de la URL): así cada uno solo puede editar su propio perfil
+  @Patch('perfil')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('foto', opcionesImagen(2)))
+  editarPerfil(
+    @UsuarioId() id: string,
+    @Body() dto: EditarPerfilDto,
+    @UploadedFile() foto?: Express.Multer.File,
+  ) {
+    return this.usuariosService.editarPerfil(id, dto, foto);
+  }
+
 
   // GET /usuarios/:usuario → 200 con los datos públicos del garage, 404 si no existe
   @Get(':usuario')

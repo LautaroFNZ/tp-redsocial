@@ -18,6 +18,9 @@
         <dt>DESCRIPCIÓN</dt>
         <dd class="desc">{{ f.descripcion }}</dd>
       </dl>
+      @if (esPropio()) {
+        <button class="btn naranja ancho" type="button" (click)="editando.set(true)">✏️ Editar ficha</button>
+      }
     </aside>
   }
 </ng-template>
@@ -117,6 +120,11 @@
 @if (modal(); as m) {
   <app-modal-mensaje [titulo]="m.titulo" [mensaje]="m.mensaje" [tipo]="m.tipo" (cerrar)="modal.set(null)" />
 }
+
+@if (editando() && yo(); as u) {
+  <app-editar-perfil [usuario]="u" (cerrar)="editando.set(false)" (guardado)="perfilGuardado($event)" />
+}
+
 
 @if (aBorrar(); as b) {
   <app-modal-mensaje
