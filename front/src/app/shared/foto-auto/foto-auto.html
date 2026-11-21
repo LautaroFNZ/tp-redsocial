@@ -1,5 +1,6 @@
 @if (imagen(); as src) {
-  <img [src]="src" appImagenRespaldo [alt]="alt()">
+  <!-- loading="lazy": el navegador baja la foto recién cuando está por aparecer en pantalla -->
+  <img [src]="src" appImagenRespaldo [alt]="alt()" loading="lazy" decoding="async">
 } @else {
   <div class="relleno" role="img" [attr.aria-label]="alt() || 'Publicación sin foto'">
     <svg viewBox="0 0 320 130" aria-hidden="true">

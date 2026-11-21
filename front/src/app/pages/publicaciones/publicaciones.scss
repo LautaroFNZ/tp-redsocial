@@ -201,6 +201,43 @@ $ancho-licencia: 250px; // fijo: así no depende de lo largo que sea el usuario
   p { margin: 0; opacity: 0.85; }
 }
 
+// ---------- Calle sin salida (fin de la ruta) ----------
+.sin-salida {
+  border-color: var(--rojo);
+
+  p { max-width: 280px; line-height: 1.5; }
+}
+
+// cartel de PARE octogonal (el borde blanco es un octógono más grande detrás)
+.pare {
+  width: 120px;
+  height: 120px;
+  padding: 6px;
+  background: var(--blanco);
+  clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
+
+  span {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--rojo);
+    clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
+    color: var(--blanco);
+    font-family: var(--fuente-titulo);
+    font-size: 24px;
+    letter-spacing: 2px;
+  }
+}
+
+.salidas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
 .chapa {
   padding: 4px 14px;
   border: 4px solid var(--negro);

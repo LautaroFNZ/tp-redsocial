@@ -28,9 +28,9 @@ import { gsap, reducirMovimiento } from '../../shared/animaciones';
 // El dueño del garage: si es el propio trae también correo y fecha de nacimiento
 type Duenio = Autor & Partial<Pick<Usuario, 'correo' | 'fechaNacimiento'>>;
 
-// Cada piso del estacionamiento es una página de 3 publicaciones.
-// El piso de arriba tiene las últimas 3 (lo que pide la consigna); bajando, las más viejas.
-const POR_PISO = 3;
+// Cada piso del estacionamiento es una página de 6 publicaciones.
+// PB tiene las últimas 6; subiendo de piso (1, 2, 3…) aparecen las más viejas.
+const POR_PISO = 6;
 
 @Component({
   selector: 'app-mi-perfil',
@@ -79,13 +79,13 @@ export class MiPerfil {
 
   // ---------- pisos ----------
   totalPisos = computed(() => Math.max(1, Math.ceil(this.total() / POR_PISO)));
-  numeroPiso = computed(() => this.totalPisos() - 1 - this.pagina()); // 0 = PB
+  numeroPiso = computed(() => this.pagina()); // 0 = PB (las más nuevas), 1 = piso 1, ...
   desde = computed(() => this.pagina() * POR_PISO); // para numerar las cocheras
   hayMasNuevas = computed(() => this.pagina() > 0);
   hayMasViejas = computed(() => this.desde() + POR_PISO < this.total());
 
-  // "cocheras 4-6" del piso de abajo
-  cocherasDeAbajo = computed(() => {
+  // "cocheras 7-12" del piso de arriba (las más viejas)
+  cocherasDeArriba = computed(() => {
     const primera = this.desde() + POR_PISO + 1;
     const ultima = Math.min(this.desde() + POR_PISO * 2, this.total());
     return primera === ultima ? `cochera ${primera}` : `cocheras ${primera}-${ultima}`;
@@ -94,7 +94,7 @@ export class MiPerfil {
   resumen = computed(() => {
     const autos = `${this.total()} ${this.total() === 1 ? 'auto' : 'autos'}`;
     const pisos = this.totalPisos();
-    return pisos === 1 ? `${autos} · PB` : `${autos} · ${pisos} pisos (PB a ${pisos - 1})`;
+    return pisos === 1 ? `${autos} · PB` : `${autos} · PB a piso ${pisos - 1}`;
   });
 
   libres = computed(() => Array(Math.max(0, POR_PISO - this.publicaciones().length)));
@@ -178,19 +178,19 @@ export class MiPerfil {
       });
   }
 
-  // Rampa arriba: publicaciones más nuevas
+  // Rampa arriba: un piso más arriba = publicaciones más viejas (los autos suben desde abajo)
   subir() {
-    if (this.hayMasNuevas() && !this.cargando()) {
-      this.entranDesdeAbajo = false;
-      this.cargarPublicaciones(this.pagina() - 1);
-    }
-  }
-
-  // Rampa abajo: publicaciones más viejas
-  bajar() {
     if (this.hayMasViejas() && !this.cargando()) {
       this.entranDesdeAbajo = true;
       this.cargarPublicaciones(this.pagina() + 1);
+    }
+  }
+
+  // Rampa abajo: un piso más abajo = publicaciones más nuevas (hasta PB, las últimas)
+  bajar() {
+    if (this.hayMasNuevas() && !this.cargando()) {
+      this.entranDesdeAbajo = false;
+      this.cargarPublicaciones(this.pagina() - 1);
     }
   }
 

@@ -32,16 +32,12 @@
     </aside>
   } @else {
     <aside class="tarjeta conductor">
-      @if (cargando()) {
+      @if (cargando() || hayMas()) {
         <span class="etiqueta">CARGANDO LA RUTA</span>
         <p>Precalentando…</p>
-      } @else if (hayMas()) {
-        <span class="etiqueta">PEAJE · KM {{ km() }}</span>
-        <p>Recorriste {{ lista().length }} de {{ total() }} publicaciones.</p>
       } @else {
-        <span class="etiqueta">FIN DE LA RUTA</span>
+        <span class="etiqueta">CALLE SIN SALIDA · KM {{ km() }}</span>
         <p>No hay más publicaciones por ahora.</p>
-        <a class="btn celeste ancho" routerLink="/publicar">Publicar</a>
       }
     </aside>
   }
@@ -64,28 +60,31 @@
         </div>
       }
 
-      <!-- Último tramo: cargando, peaje (paginación) o fin de la ruta -->
+      <!-- Último tramo: cargando la próxima tanda (scroll infinito), calle sin salida o ruta vacía -->
       <div class="tramo">
-        <div class="cartel">
-          @if (cargando()) {
+        @if (cargando() || hayMas()) {
+          <div class="cartel">
             <app-luz-testigo tipo="bujia" [tamano]="44" />
-            <h2>Precalentando…</h2>
-          } @else if (hayMas()) {
-            <span class="chapa">PEAJE</span>
-            <h2>Quedan {{ restantes() }} publicaciones</h2>
-            <button class="btn amarillo" type="button" (click)="pasarPeaje()">
-              Pasar el peaje ({{ restantes() < porPagina ? restantes() : porPagina }} más)
-            </button>
-          } @else if (lista().length) {
-            <span class="chapa">FIN</span>
-            <h2>Fin de la ruta</h2>
-            <p>Ya viste las {{ total() }} publicaciones.</p>
-          } @else {
+            <h2>{{ lista().length ? 'Cargando más ruta…' : 'Precalentando…' }}</h2>
+          </div>
+        } @else if (lista().length) {
+          <!-- No hay más publicaciones: calle sin salida -->
+          <div class="cartel sin-salida">
+            <div class="pare" aria-hidden="true"><span>PARE</span></div>
+            <h2>Calle sin salida</h2>
+            <p>Recorriste las {{ total() }} publicaciones. No hay más ruta por ahora.</p>
+            <div class="salidas">
+              <button class="btn amarillo" type="button" (click)="pegarLaVuelta()">↺ Pegar la vuelta</button>
+              <a class="btn celeste" routerLink="/publicar">Publicar</a>
+            </div>
+          </div>
+        } @else {
+          <div class="cartel">
             <span class="chapa">VACÍA</span>
             <h2>La ruta está vacía</h2>
             <a class="btn celeste" routerLink="/publicar">Publicar el primero</a>
-          }
-        </div>
+          </div>
+        }
       </div>
     </div>
 
@@ -94,7 +93,7 @@
       [orden]="orden()"
       [presionado]="presionado()"
       [hayAnterior]="indice() > 0"
-      [haySiguiente]="indice() < lista().length || hayMas()"
+      [haySiguiente]="indice() < lista().length"
       (embrague)="cambiarOrden()"
       (freno)="anterior()"
       (acelerador)="siguiente()" />

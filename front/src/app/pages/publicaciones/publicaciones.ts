@@ -20,7 +20,10 @@ import { Ruta } from '../../services/ruta';
 import { SoloAdmin } from '../../shared/directivas/solo-admin.directive';
 import { gsap, reducirMovimiento } from '../../shared/animaciones';
 
+// Scroll infinito: se piden de a 5 (el "limitador") y la próxima tanda se pide sola
+// cuando faltan AVISO_CARGA publicaciones para llegar al final de lo cargado.
 const POR_PAGINA = 5;
+const AVISO_CARGA = 2;
 
 @Component({
   selector: 'app-publicaciones',
@@ -96,6 +99,13 @@ export class Publicaciones {
       afterNextRender(() => this.animarLlegada(i, avanza), { injector: this.injector });
     });
 
+    // Scroll infinito: al acercarse al final de lo cargado, pide la próxima tanda.
+    // Limitador: de a POR_PAGINA y nunca dos pedidos a la vez (si ya está cargando, espera).
+    effect(() => {
+      const cerca = this.indice() >= this.lista().length - AVISO_CARGA;
+      if (cerca && this.hayMas() && !this.cargando()) untracked(() => this.cargar());
+    });
+
     // Logo o botón "Ruta" estando acá: recarga desde el KM 001 (la primera vez no, porque ya carga sola)
     let primeraVez = true;
     effect(() => {
@@ -142,10 +152,9 @@ export class Publicaciones {
     });
   }
 
-    pasarPeaje() {
-    if (!this.hayMas() || this.cargando()) return;
-    const primeraNueva = this.lista().length; // donde estaba el peaje queda la primera publicación nueva
-    this.cargar(false, () => this.irAlTramo(primeraNueva));
+  // "Pegar la vuelta" desde la calle sin salida: vuelve al KM 001 con la animación de los pedales
+  pegarLaVuelta() {
+    this.irA(0);
   }
 
   // ---------- scroll y pedales ----------
@@ -209,11 +218,6 @@ export class Publicaciones {
     const tramo = this.carretera().nativeElement.querySelectorAll<HTMLElement>('.tramo')[i];
     if (!tramo) return;
 
-    if (this.andar) {
-      gsap.timeline()
-        .to(this.andar, { timeScale: avanza ? 6 : -4, duration: 0.2, ease: 'power2.out' })
-        .to(this.andar, { timeScale: 1, duration: 0.9, ease: 'power2.inOut' });
-    }
 
     const tarjeta = tramo.firstElementChild; // app-publicacion-card o el cartel del peaje
     if (tarjeta) {
@@ -222,6 +226,19 @@ export class Publicaciones {
         { y: avanza ? 70 : -50, scale: 0.92, rotation: avanza ? 1.5 : -1.5 },
         { y: 0, scale: 1, rotation: 0, duration: 0.7, ease: 'back.out(1.6)', overwrite: true },
       );
+    }
+
+    // Calle sin salida: el PARE aparece girando, la ruta frena de golpe y las líneas se detienen.
+    // Si no, las líneas pegan un acelerón (o marcha atrás) y vuelven a su ritmo.
+    const pare = tramo.querySelector('.pare');
+    if (pare) {
+      gsap.fromTo(pare, { scale: 0, rotation: -120 }, { scale: 1, rotation: 0, duration: 0.7, ease: 'back.out(2)' });
+      gsap.fromTo(this.marco().nativeElement, { x: 0 }, { x: 7, duration: 0.06, yoyo: true, repeat: 5, delay: 0.55, ease: 'none' });
+      if (this.andar) gsap.to(this.andar, { timeScale: 0, duration: 0.8, ease: 'power2.out', overwrite: true });
+    } else if (this.andar) {
+      gsap.timeline()
+        .to(this.andar, { timeScale: avanza ? 6 : -4, duration: 0.2, ease: 'power2.out', overwrite: true })
+        .to(this.andar, { timeScale: 1, duration: 0.9, ease: 'power2.inOut' });
     }
 
     const km = tramo.querySelector('.km');
@@ -245,12 +262,7 @@ export class Publicaciones {
 
   siguiente(evento?: Event) {
     evento?.preventDefault();
-    // parado en el peaje: el acelerador lo pasa
-    if (this.indice() === this.lista().length) {
-      this.pasarPeaje();
-      return;
-    }
-    this.irA(this.indice() + 1);
+    this.irA(this.indice() + 1); // en el último tramo no avanza (o carga sola, o es la calle sin salida)
   }
 
   anterior(evento?: Event) {

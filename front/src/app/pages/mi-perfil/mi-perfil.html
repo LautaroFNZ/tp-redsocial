@@ -119,24 +119,24 @@
     <!-- Paginado por pisos: solo si hay más de 3 autos -->
     @if (totalPisos() > 1) {
       <nav class="rampas" aria-label="Pisos del garage">
-        <button class="rampa" type="button" (click)="bajar()" [disabled]="!hayMasViejas() || cargando()">
+        <button class="rampa" type="button" (click)="bajar()" [disabled]="!hayMasNuevas() || cargando()">
           ▼ Rampa abajo
-          @if (hayMasViejas()) { <small>más viejas · {{ cocherasDeAbajo() }}</small> }
+          @if (hayMasNuevas()) { <small>más nuevas{{ numeroPiso() === 1 ? ' · PB' : '' }}</small> }
         </button>
 
         <div class="cartel-piso" aria-live="polite">
           <small>{{ numeroPiso() === 0 ? 'ESTÁS EN' : 'ESTÁS EN EL' }}</small>
           <b>{{ numeroPiso() === 0 ? 'PB' : 'PISO ' + numeroPiso() }}</b>
           <em>
-            @if (pagina() === 0) { el de arriba · las últimas }
-            @else if (!hayMasViejas()) { el de abajo · las más viejas }
+            @if (pagina() === 0) { planta baja · las últimas }
+            @else if (!hayMasViejas()) { el de arriba · las más viejas }
             @else { de {{ totalPisos() }} pisos }
           </em>
         </div>
 
-        <button class="rampa" type="button" (click)="subir()" [disabled]="!hayMasNuevas() || cargando()">
+        <button class="rampa" type="button" (click)="subir()" [disabled]="!hayMasViejas() || cargando()">
           Rampa arriba ▲
-          @if (hayMasNuevas()) { <small>más nuevas</small> }
+          @if (hayMasViejas()) { <small>más viejas · {{ cocherasDeArriba() }}</small> }
         </button>
       </nav>
     }
