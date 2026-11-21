@@ -86,6 +86,21 @@ let UsuariosService = class UsuariosService {
             .select('nombre apellido usuario foto descripcion perfil')
             .exec();
     }
+    async editarPerfil(id, dto, foto) {
+        const cambios = {
+            nombre: dto.nombre,
+            apellido: dto.apellido,
+            descripcion: dto.descripcion,
+        };
+        if (foto)
+            cambios.foto = await this.fileService.cloudinaryUploader(foto);
+        const usuario = await this.usuarioModel
+            .findOneAndUpdate({ _id: id, activo: true }, cambios, { new: true, runValidators: true })
+            .exec();
+        if (!usuario)
+            throw new NotFoundException('El usuario no existe o está deshabilitado.');
+        return usuario;
+    }
     listar() {
         return this.usuarioModel.find().sort({ createdAt: -1 }).exec();
     }

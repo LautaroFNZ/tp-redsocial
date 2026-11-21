@@ -18,6 +18,7 @@ import { ComentarioItem } from '../../components/comentario-item/comentario-item
 import { Pedal, Pedalera } from '../../components/pedalera/pedalera';
 import { Ruta } from '../../services/ruta';
 import { SoloAdmin } from '../../shared/directivas/solo-admin.directive';
+import { gsap, reducirMovimiento } from '../../shared/animaciones';
 
 const POR_PAGINA = 5;
 
@@ -36,6 +37,8 @@ const POR_PAGINA = 5;
 })
 export class Publicaciones {
   private carretera = viewChild.required<ElementRef<HTMLElement>>('carretera');
+  private marco = viewChild.required<ElementRef<HTMLElement>>('marco');
+  private carriles = viewChild.required<ElementRef<HTMLElement>>('carriles');
   private tarjetaConductor = viewChild.required<TemplateRef<unknown>>('conductor');
   private panel = inject(PanelLateral);
   private api = inject(PublicacionesApi);
@@ -68,6 +71,9 @@ export class Publicaciones {
   private pedido = 0; // para ignorar respuestas viejas si cambia el orden
   private ultimoScroll = 0;
   private soltarPedal?: ReturnType<typeof setTimeout>;
+  private viaje?: gsap.core.Tween; // el movimiento de la ruta que está en curso (pedales)
+  private andar?: gsap.core.Tween; // las líneas del carril avanzando sin parar
+  private indiceAnterior = 0;      // para saber si la publicación nueva viene de adelante o de atrás
 
   constructor() {
     // Cada vez que cambia la publicación actual, trae sus últimos 3 comentarios
@@ -77,6 +83,17 @@ export class Publicaciones {
       this.comentariosApi.listar(publicacion._id, 0, 3).subscribe(pagina =>
         this.comentariosRuta.update(mapa => ({ ...mapa, [publicacion._id]: pagina.comentarios })),
       );
+    });
+
+    // Cada vez que cambia la publicación (pedales, flechas o rueda): la nueva entra con rebote,
+    // las líneas del carril pegan un acelerón y el cartel de KM "salta"
+    effect(() => {
+      const i = this.indice();
+      const avanza = i >= this.indiceAnterior;
+      const cambio = i !== this.indiceAnterior;
+      this.indiceAnterior = i;
+      if (!cambio || reducirMovimiento()) return;
+      afterNextRender(() => this.animarLlegada(i, avanza), { injector: this.injector });
     });
 
     // Logo o botón "Ruta" estando acá: recarga desde el KM 001 (la primera vez no, porque ya carga sola)
@@ -90,9 +107,14 @@ export class Publicaciones {
     // al dibujar la lista, arranca en el KM 001 (si no, el snap queda enganchado al cartel del final)
     this.cargar(true, () => this.irAlTramo(0));
 
-    afterNextRender(() => this.panel.contenido.set(this.tarjetaConductor()));
+    afterNextRender(() => {
+      this.panel.contenido.set(this.tarjetaConductor());
+      this.arrancarCarriles();
+    });
     inject(DestroyRef).onDestroy(() => {
       clearTimeout(this.soltarPedal);
+      this.viaje?.kill();
+      this.andar?.kill();
       this.panel.contenido.set(null);
     });
   }
@@ -143,9 +165,82 @@ export class Publicaciones {
     this.soltarPedal = setTimeout(() => this.presionado.set(null), 180);
   }
 
+  // Pedales: GSAP mueve el scroll de la carretera (plugin ScrollTo).
+  // Al frenar, cuando llega, la ruta "cabecea".
   private irA(i: number) {
     const destino = Math.max(0, Math.min(i, this.lista().length));
-    this.carretera().nativeElement.scrollTo({ top: destino * this.altoTramo(), behavior: 'smooth' });
+    if (destino === this.indice()) return;
+    const avanza = destino > this.indice();
+    const carretera = this.carretera().nativeElement;
+    const top = destino * this.altoTramo();
+
+    if (reducirMovimiento()) {
+      carretera.scrollTo({ top });
+      return;
+    }
+
+    // Mientras GSAP mueve el scroll apagamos el scroll-snap (si no, el navegador "tironea" la animación)
+    this.viaje?.kill();
+    carretera.style.scrollSnapType = 'none';
+    this.viaje = gsap.to(carretera, {
+      scrollTo: { y: top, autoKill: true }, // autoKill: si el usuario scrollea con la rueda, cede el control
+      duration: 0.6,
+      ease: 'power2.inOut', // el rebote lo hace la tarjeta al llegar (animarLlegada)
+      onComplete: () => {
+        carretera.style.scrollSnapType = '';
+        if (!avanza) this.cabecear();
+      },
+      onInterrupt: () => (carretera.style.scrollSnapType = ''),
+    });
+  }
+
+  // Las líneas del medio bajan sin parar: la sensación de ir manejando
+  private arrancarCarriles() {
+    if (reducirMovimiento()) return;
+    this.andar = gsap.fromTo(
+      this.carriles().nativeElement,
+      { backgroundPosition: '50% 0px' },
+      { backgroundPosition: '50% 84px', duration: 0.9, ease: 'none', repeat: -1 }, // 84px = raya + hueco
+    );
+  }
+
+  // Llega una publicación: acelerón de las líneas (o marcha atrás), la tarjeta entra con rebote y salta el KM
+  private animarLlegada(i: number, avanza: boolean) {
+    const tramo = this.carretera().nativeElement.querySelectorAll<HTMLElement>('.tramo')[i];
+    if (!tramo) return;
+
+    if (this.andar) {
+      gsap.timeline()
+        .to(this.andar, { timeScale: avanza ? 6 : -4, duration: 0.2, ease: 'power2.out' })
+        .to(this.andar, { timeScale: 1, duration: 0.9, ease: 'power2.inOut' });
+    }
+
+    const tarjeta = tramo.firstElementChild; // app-publicacion-card o el cartel del peaje
+    if (tarjeta) {
+      gsap.fromTo(
+        tarjeta,
+        { y: avanza ? 70 : -50, scale: 0.92, rotation: avanza ? 1.5 : -1.5 },
+        { y: 0, scale: 1, rotation: 0, duration: 0.7, ease: 'back.out(1.6)', overwrite: true },
+      );
+    }
+
+    const km = tramo.querySelector('.km');
+    if (km) gsap.fromTo(km, { scale: 1.5 }, { scale: 1, duration: 0.45, delay: 0.2, ease: 'back.out(3)' });
+
+    // La licencia de la izquierda (está en el panel del layout) se da vuelta con el conductor nuevo
+    const licencia = document.querySelector('.licencia');
+    if (licencia) {
+      gsap.fromTo(
+        licencia,
+        { rotationY: avanza ? -90 : 90, transformPerspective: 700 },
+        { rotationY: 0, duration: 0.55, ease: 'back.out(1.6)', overwrite: true },
+      );
+    }
+  }
+
+  // Al frenar, la ruta baja un poquito y vuelve (como la trompa del auto)
+  private cabecear() {
+    gsap.fromTo(this.marco().nativeElement, { y: 0 }, { y: 8, duration: 0.12, yoyo: true, repeat: 1, ease: 'power1.out' });
   }
 
   siguiente(evento?: Event) {
@@ -165,6 +260,10 @@ export class Publicaciones {
 
   // Embrague: cambia el orden y la ruta arranca de nuevo desde el KM 001
   cambiarOrden() {
+    // "tironeo" del cambio de marcha
+    if (!reducirMovimiento()) {
+      gsap.fromTo(this.marco().nativeElement, { x: 0 }, { x: 5, duration: 0.06, yoyo: true, repeat: 5, ease: 'none' });
+    }
     this.orden.update(o => (o === 'fecha' ? 'meGusta' : 'fecha'));
     this.recargar();
   }

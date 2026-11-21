@@ -1,37 +1,56 @@
-<!-- Tarjeta de la columna izquierda: solo la persona y los accesos -->
+<!-- Tarjeta de la columna izquierda: la licencia de conducir de quien publicó -->
 <ng-template #conductor>
   @let p = actual();
-  <aside class="tarjeta conductor">
-    @if (p) {
-      <span class="etiqueta">AL VOLANTE · KM {{ km() }}</span>
-      <div class="quien">
-        <app-avatar [usuario]="p.autor" [tamano]="50" />
-        <b>{{ p.autor.nombre }} {{ p.autor.apellido }}</b>
+  @if (p) {
+    <aside class="licencia" aria-label="Quién publicó">
+      <div class="franja">
+        <span>LICENCIA DE CONDUCIR</span>
+        <span>KM {{ km() }}</span>
       </div>
-      <app-patente [texto]="p.autor.usuario" />
-      <a class="btn amarillo ancho"
-         [routerLink]="p.autor._id === usuarioId() ? ['/mi-perfil'] : ['/garage', p.autor.usuario]">
-        Ver garage de {{ p.autor.usuario }}
+
+      <div class="titular">
+        <app-avatar [usuario]="p.autor" [tamano]="78" forma="carnet" />
+        <div class="datos">
+          <small>TITULAR</small>
+          <b>{{ p.autor.nombre }}</b>
+          <b>{{ p.autor.apellido }}</b>
+          <small class="clase">CLASE {{ p.autor.perfil === 'administrador' ? 'A · TALLER' : 'B1' }}</small>
+        </div>
+      </div>
+
+      <!-- La patente es el acceso al garage de quien publicó -->
+      <a class="patente-link"
+         [routerLink]="p.autor._id === usuarioId() ? ['/mi-perfil'] : ['/garage', p.autor.usuario]"
+         [attr.aria-label]="'Ver el garage de ' + p.autor.usuario">
+        <app-patente [texto]="p.autor.usuario" />
+        <small>tocá la patente para ver su garage</small>
       </a>
+
       <button *appSoloAdmin class="btn ancho sacar" type="button" (click)="aBorrar.set(p)">
         <app-luz-testigo tipo="mano" [marco]="false" [tamano]="18" /> Sacar de la ruta
       </button>
-    } @else if (cargando()) {
-      <span class="etiqueta">CARGANDO LA RUTA</span>
-      <p>Precalentando…</p>
-    } @else if (hayMas()) {
-      <span class="etiqueta">PEAJE · KM {{ km() }}</span>
-      <p>Recorriste {{ lista().length }} de {{ total() }} publicaciones.</p>
-    } @else {
-      <span class="etiqueta">FIN DE LA RUTA</span>
-      <p>No hay más publicaciones por ahora.</p>
-      <a class="btn celeste ancho" routerLink="/publicar">Publicar</a>
-    }
-  </aside>
+    </aside>
+  } @else {
+    <aside class="tarjeta conductor">
+      @if (cargando()) {
+        <span class="etiqueta">CARGANDO LA RUTA</span>
+        <p>Precalentando…</p>
+      } @else if (hayMas()) {
+        <span class="etiqueta">PEAJE · KM {{ km() }}</span>
+        <p>Recorriste {{ lista().length }} de {{ total() }} publicaciones.</p>
+      } @else {
+        <span class="etiqueta">FIN DE LA RUTA</span>
+        <p>No hay más publicaciones por ahora.</p>
+        <a class="btn celeste ancho" routerLink="/publicar">Publicar</a>
+      }
+    </aside>
+  }
 </ng-template>
 
 <div class="ruta">
-  <div class="marco">
+  <div class="marco" #marco>
+    <!-- Líneas del carril: GSAP las hace avanzar siempre (y aceleran al cambiar de publicación) -->
+    <div class="carriles" #carriles aria-hidden="true"></div>
     <div class="carretera" #carretera (scroll)="alScrollear()" tabindex="0"
          aria-label="Ruta de publicaciones. Usá la rueda, las flechas o los pedales para avanzar.">
       @for (p of lista(); track p._id; let i = $index) {

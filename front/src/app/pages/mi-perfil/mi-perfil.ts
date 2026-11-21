@@ -1,4 +1,7 @@
-import { Component, DestroyRef, TemplateRef, afterNextRender, computed, inject, signal, viewChild } from '@angular/core';
+import {
+  Component, DestroyRef, ElementRef, Injector, TemplateRef,
+  afterNextRender, computed, inject, signal, viewChild,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -20,6 +23,7 @@ import { RecortarPipe } from '../../shared/pipes/recortar.pipe';
 import { EdadPipe } from '../../shared/pipes/edad.pipe';
 import { SoloAdmin } from '../../shared/directivas/solo-admin.directive';
 import { EditarPerfil } from '../../components/editar-perfil/editar-perfil';
+import { gsap, reducirMovimiento } from '../../shared/animaciones';
 
 // El dueño del garage: si es el propio trae también correo y fecha de nacimiento
 type Duenio = Autor & Partial<Pick<Usuario, 'correo' | 'fechaNacimiento'>>;
@@ -45,6 +49,8 @@ export class MiPerfil {
   private usuariosApi = inject(UsuariosApi);
   private comentariosApi = inject(ComentariosApi);
   private sesion = inject(Sesion);
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private injector = inject(Injector);
 
   duenio = signal<Duenio | null>(null);
   buscado = signal(''); // el usuario de la URL, para el mensaje de "no encontrado"
@@ -63,6 +69,7 @@ export class MiPerfil {
   yo = this.sesion.usuario;
 
   private pedido = 0; // para ignorar respuestas viejas si se cambia de piso rápido
+  private entranDesdeAbajo = false; // al bajar de piso los autos suben por la rampa
 
   esPropio = computed(() => {
     const duenio = this.duenio();
@@ -160,6 +167,8 @@ export class MiPerfil {
           this.total.set(resultado.total);
           this.cargando.set(false);
           this.cargarComentarios(resultado.publicaciones);
+          // cuando Angular dibuja las cocheras, los autos entran a estacionar
+          afterNextRender(() => this.estacionar(), { injector: this.injector });
         },
         error: error => {
           if (numero !== this.pedido) return;
@@ -171,12 +180,31 @@ export class MiPerfil {
 
   // Rampa arriba: publicaciones más nuevas
   subir() {
-    if (this.hayMasNuevas() && !this.cargando()) this.cargarPublicaciones(this.pagina() - 1);
+    if (this.hayMasNuevas() && !this.cargando()) {
+      this.entranDesdeAbajo = false;
+      this.cargarPublicaciones(this.pagina() - 1);
+    }
   }
 
   // Rampa abajo: publicaciones más viejas
   bajar() {
-    if (this.hayMasViejas() && !this.cargando()) this.cargarPublicaciones(this.pagina() + 1);
+    if (this.hayMasViejas() && !this.cargando()) {
+      this.entranDesdeAbajo = true;
+      this.cargarPublicaciones(this.pagina() + 1);
+    }
+  }
+
+  // Animación con GSAP: los autos entran a las cocheras uno atrás del otro (stagger) y frenan con rebote
+  private estacionar() {
+    const autos = this.host.nativeElement.querySelectorAll('.cochera .auto');
+    if (!autos.length || reducirMovimiento()) return;
+    const desde = this.entranDesdeAbajo ? 180 : -180;
+    gsap.fromTo(
+      autos,
+      { y: desde, rotation: this.entranDesdeAbajo ? -6 : 6, opacity: 0 },
+      { y: 0, rotation: 0, opacity: 1, duration: 0.8, stagger: 0.2, ease: 'back.out(1.6)' },
+    );
+    this.entranDesdeAbajo = false;
   }
 
   // "Mis últimas 3 publicaciones y sus comentarios": 2 comentarios por cochera

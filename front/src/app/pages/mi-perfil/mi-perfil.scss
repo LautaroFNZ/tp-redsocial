@@ -1,4 +1,5 @@
 .ficha {
+  position: relative; // para ubicar el escáner en la esquina
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -160,7 +161,142 @@
 }
 
 // ---------- botón Sacar en cada cochera ----------
+// ---- Escáner OBD: botón chico en la esquina de la ficha para editarla ----
+.escaner {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--negro);
+  border-radius: 10px;
+  background: var(--blanco);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+
+  .onda { stroke: var(--gris); transition: stroke 0.15s; } // pantalla "apagada"
+
+  // cartelito que aparece a la izquierda al pasar el mouse
+  .leyenda {
+    position: absolute;
+    right: calc(100% + 8px);
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--negro);
+    color: var(--blanco);
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
+
+  &:hover,
+  &:focus-visible {
+    .onda { stroke: var(--verde); } // se "conecta": la pantalla marca en verde
+    .leyenda { opacity: 1; }
+  }
+  &:hover svg { animation: escanear 0.4s ease-in-out; }
+  &:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35); }
+  &:focus-visible { outline: 3px solid var(--amarillo); outline-offset: 3px; }
+}
+
+@keyframes escanear {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .escaner:hover svg { animation: none; }
+}
+
+// ---- Posteo sin foto: cartel verde de ruta en miniatura ----
+.cartelito {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 10px 0;
+  background: repeating-linear-gradient(180deg, #1B1C20 0 22px, #202127 22px 44px); // asfalto
+}
+
+.senal-mini {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 7px 9px;
+  border: 3px solid var(--blanco);
+  border-radius: 7px;
+  background: #0B7A37; // verde ruta, igual que en la Ruta
+  color: var(--blanco);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 9px;
+
+  .flecha { font-size: 14px; line-height: 1; }
+  p {
+    margin: 0;
+    font-family: var(--fuente-titulo);
+    font-size: 20px;
+    letter-spacing: 3px;
+    line-height: 1;
+  }
+}
+
+// dos postes grises que sostienen el cartel
+.postes {
+  position: relative;
+  width: 60%;
+  height: 18px;
+  flex: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    bottom: 0;
+    width: 6px;
+    background: #8A8D94;
+    border-radius: 2px;
+  }
+  &::before { left: 12%; }
+  &::after { right: 12%; }
+}
+
+// Link que cubre toda la tarjeta del auto (patrón "tarjeta clickeable")
+.tapa {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 8px;
+
+  &:focus-visible { outline: 3px solid var(--amarillo); outline-offset: 3px; }
+}
+
+.auto {
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    border-color: var(--amarillo);
+    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3), 0 0 0 3px var(--negro);
+  }
+}
+
 .sacar {
+  position: relative;
+  z-index: 3; // por encima del link de la tarjeta: sacar no abre la publicación
   margin-top: 6px;
   width: 100%;
   min-height: 28px;

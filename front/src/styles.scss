@@ -78,6 +78,7 @@ h1, h2, h3 {
   &.amarillo { background: var(--amarillo); }
   &.celeste { background: var(--celeste); }
   &.naranja { background: var(--naranja); }
+  &.rojo { background: var(--rojo); color: var(--blanco); } // salir (cerrar sesión)
   &.verde { background: var(--verde); color: var(--blanco); border-color: var(--negro); }
   &.ancho { width: 100%; }
   &.activo { border-color: var(--negro); }

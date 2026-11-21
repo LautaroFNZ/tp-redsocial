@@ -1,0 +1,50 @@
+// Capa fija detrás de toda la app
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+// ---------- banquinas: columnas de rayas amarillas a los costados ----------
+.banquina {
+  position: absolute;
+  top: -10vh; // arranca un poco arriba para que al bajar no quede un hueco
+  bottom: 0;
+  width: 8px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0.35;
+
+  &.izquierda { left: 3vw; }
+  &.derecha { right: 3vw; }
+}
+
+.raya {
+  flex: none;
+  height: 10vh;            // cada raya + su hueco = 10vh → al moverse 100% de su alto, empalma justo
+  background: linear-gradient(var(--amarillo) 0 55%, transparent 55% 100%);
+}
+
+// ---------- autos: un par de luces ----------
+.auto {
+  position: absolute;
+  top: 0;
+  display: flex;
+  gap: 18px;
+  opacity: 0.55;
+
+  span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #FFF6C9;
+    box-shadow: 0 0 14px 6px rgba(255, 246, 201, 0.45); // resplandor del faro
+  }
+
+  &.frenando span {
+    background: var(--rojo);
+    box-shadow: 0 0 12px 5px rgba(224, 65, 59, 0.45);
+  }
+}

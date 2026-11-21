@@ -19,7 +19,20 @@
         <dd class="desc">{{ f.descripcion }}</dd>
       </dl>
       @if (esPropio()) {
-        <button class="btn naranja ancho" type="button" (click)="editando.set(true)">✏️ Editar ficha</button>
+        <!-- Editar ficha: acción secundaria, escondida en la esquina como un escáner OBD -->
+        <button class="escaner" type="button" (click)="editando.set(true)" aria-label="Editar ficha">
+          <svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M16 27 C16 30 22 30 24 28" fill="none" stroke="#111111" stroke-width="2.2" stroke-linecap="round"/>
+            <rect x="22" y="24" width="8" height="6" rx="1.5" fill="#111111"/>
+            <rect x="5" y="2" width="20" height="25" rx="4" fill="#F6A04D" stroke="#111111" stroke-width="2.2"/>
+            <rect x="8.5" y="5.5" width="13" height="9" rx="1.5" fill="#1B1C20"/>
+            <path class="onda" d="M10 11 L12.5 11 L14 8 L16 13 L17.5 10 L20 10" fill="none" stroke-width="1.5" stroke-linejoin="round"/>
+            <circle cx="11" cy="20" r="1.8" fill="#111111"/>
+            <circle cx="19" cy="20" r="1.8" fill="#111111"/>
+            <rect x="13.5" y="18.8" width="3" height="2.4" rx="1" fill="#111111"/>
+          </svg>
+          <span class="leyenda">Editar ficha</span>
+        </button>
       }
     </aside>
   }
@@ -54,8 +67,21 @@
         <div class="cochera">
           <span class="numero">cochera {{ desde() + i + 1 }}</span>
           <article class="auto">
+            <!-- Toda la tarjeta lleva a la publicación: el link la cubre entera (el botón Sacar queda por encima) -->
+            <a class="tapa" [routerLink]="['/publicacion', p._id]" [attr.aria-label]="'Ver la publicación ' + p.titulo"></a>
             @if (pagina() === 0 && i === 0) { <span class="ultima">LA ÚLTIMA</span> }
-            <div class="foto"><app-foto-auto [imagen]="p.imagen" [alt]="p.titulo" /></div>
+            @if (p.imagen) {
+              <div class="foto"><app-foto-auto [imagen]="p.imagen" [alt]="p.titulo" /></div>
+            } @else {
+              <!-- Posteo sin foto: cartel verde de ruta con texto fijo (igual para todas) -->
+              <div class="foto cartelito" role="img" [attr.aria-label]="'Posteo: ' + p.titulo">
+                <div class="senal-mini">
+                  <span class="flecha" aria-hidden="true">▸</span>
+                  <p>CARTEL</p>
+                </div>
+                <div class="postes" aria-hidden="true"></div>
+              </div>
+            }
             <div class="info">
               <h3 [title]="p.titulo">{{ p.titulo | recortar:40 }}</h3>
               <span class="stats">
@@ -71,9 +97,9 @@
               } @else {
                 <span class="sin-comentarios">💬 Sin comentarios todavía</span>
               }
-              <a class="ver-todos" [routerLink]="['/publicacion', p._id]">
-                💬 {{ p.cantidadComentarios ?? 0 }} · ver publicación
-              </a>
+              <span class="ver-todos">
+                💬 {{ p.cantidadComentarios ?? 0 }} {{ p.cantidadComentarios === 1 ? 'comentario' : 'comentarios' }}
+              </span>
               <button *appSoloAdmin class="sacar" type="button" (click)="aBorrar.set(p)"
                       [attr.aria-label]="'Sacar ' + p.titulo + ' del garage'">
                 <app-luz-testigo tipo="mano" [marco]="false" [tamano]="14" /> Sacar

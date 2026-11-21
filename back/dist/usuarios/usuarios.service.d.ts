@@ -2,6 +2,7 @@ import { Model } from 'mongoose';
 import { Usuario, UsuarioDocument } from './schemas/usuario.schema.js';
 import { FileService } from '../archivos/file.service.js';
 import { RegistroDto } from '../auth/dto/registro.dto.js';
+import { EditarPerfilDto } from './dto/editar-perfil.dto.js';
 export declare class UsuariosService {
     private readonly usuarioModel;
     private readonly fileService;
@@ -67,6 +68,21 @@ export declare class UsuariosService {
     } & Required<{
         _id: import("mongoose").Types.ObjectId;
     }>) | null>;
+    editarPerfil(id: string, dto: EditarPerfilDto, foto?: Express.Multer.File): Promise<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, Usuario, {}, import("mongoose").DefaultSchemaOptions> & Usuario & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    } & {
+        id: string;
+    }, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").Document<unknown, {}, Usuario, {}, import("mongoose").DefaultSchemaOptions> & Usuario & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    } & {
+        id: string;
+    } & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }>>;
     listar(): Promise<(import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, Usuario, {}, import("mongoose").DefaultSchemaOptions> & Usuario & {
         _id: import("mongoose").Types.ObjectId;
     } & {

@@ -208,3 +208,23 @@
   &:disabled { opacity: 0.6; cursor: default; }
   &:focus-visible { outline: 3px solid var(--amarillo); outline-offset: 2px; }
 }
+// ---- haces de los faros (los anima GSAP al hacer luces) ----
+.haces {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+
+  span {
+    position: absolute;
+    bottom: -20px;
+    width: 55%;
+    height: 85%;
+    opacity: 0;
+    background: linear-gradient(to top, rgba(255, 246, 201, 0.95), rgba(255, 246, 201, 0));
+    clip-path: polygon(44% 100%, 56% 100%, 100% 0, 0 0); // cono de luz
+  }
+
+  span:first-child { left: -6%; }
+  span:last-child { right: -6%; }
+}

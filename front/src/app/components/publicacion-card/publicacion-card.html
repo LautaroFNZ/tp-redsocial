@@ -26,13 +26,16 @@
     <app-foto-auto class="foto" [imagen]="p.imagen" [alt]="p.titulo" />
   }
 
+  <!-- Haces de los faros: destellan cuando le hacés luces (me gusta) -->
+  <div class="haces" #haces aria-hidden="true"><span></span><span></span></div>
+
   @if (mostrarKm()) {
     <span class="km" [attr.aria-label]="'Publicación número ' + posicion()">KM {{ km() }}</span>
   }
 
   <div class="acciones">
     <button class="accion" type="button" [class.prendida]="leGusta()" [disabled]="procesando()"
-            (click)="luces.emit()" [attr.aria-pressed]="leGusta()"
+            (click)="hacerLuces()" [attr.aria-pressed]="leGusta()"
             [attr.aria-label]="leGusta() ? 'Apagar las luces (quitar me gusta)' : 'Hacerle luces (me gusta)'">
       <app-luz-testigo tipo="luces" [encendida]="leGusta()" [marco]="false" [tamano]="28" />
     </button>

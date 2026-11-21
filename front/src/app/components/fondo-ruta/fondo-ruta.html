@@ -1,0 +1,12 @@
+<div class="banquina izquierda">
+  @for (r of rayas; track r) { <span class="raya"></span> }
+</div>
+<div class="banquina derecha">
+  @for (r of rayas; track r) { <span class="raya"></span> }
+</div>
+
+@for (a of autos; track a.id) {
+  <div class="auto" [class.frenando]="a.frenando" [style.left.%]="8 + a.id * 15">
+    <span></span><span></span>
+  </div>
+}

@@ -1,6 +1,7 @@
 <div class="avatar"
+     [class.carnet]="forma() === 'carnet'"
      [style.width.px]="tamano()"
-     [style.height.px]="tamano()"
+     [style.height.px]="alto()"
      [style.font-size.px]="tamano() * 0.33"
      [style.background]="color()">
   @if (usuario().foto; as foto) {

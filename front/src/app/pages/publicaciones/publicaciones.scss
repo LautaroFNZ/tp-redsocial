@@ -1,4 +1,4 @@
-$ancho-ruta: 440px;
+$ancho-ruta: 500px; // ancho de la ruta (antes 440px)
 $alto-pedalera: 230px; // espacio que se reserva abajo para la pedalera
 
 .ruta {
@@ -16,6 +16,85 @@ $alto-pedalera: 230px; // espacio que se reserva abajo para la pedalera
 
   h2 { font-size: 14px; line-height: 1.2; margin-top: 4px; }
   p { margin: 0; font-size: 13px; line-height: 1.4; }
+}
+
+// ---------- Licencia de conducir (quien publicó) ----------
+$ancho-licencia: 250px; // fijo: así no depende de lo largo que sea el usuario
+
+.licencia {
+  width: $ancho-licencia;
+  margin-left: auto; // pegada a la ruta, como el menú
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border: 4px solid var(--negro);
+  border-radius: 16px;
+  background: var(--celeste);
+  box-shadow: var(--sombra);
+  color: var(--negro);
+}
+
+.franja {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 8px;
+  border-radius: 5px;
+  background: var(--azul-patente);
+  color: var(--blanco);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.titular {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.datos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  small { font-size: 9px; font-weight: 700; letter-spacing: 2px; opacity: 0.65; }
+  b {
+    font-size: 12px;
+    line-height: 1.25;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; // nombres largos se cortan con "…" en vez de deformar la licencia
+  }
+  .clase { margin-top: 5px; }
+}
+
+// La patente ocupa todo el ancho de la licencia (si el usuario es largo, el componente achica la letra)
+.licencia .patente-link {
+  align-items: stretch;
+
+  app-patente { display: block; }
+  small { text-align: center; color: var(--negro); opacity: 0.6; font-size: 10px; }
+}
+
+// Patente clickeable: lleva al garage de quien publicó
+.patente-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+
+  app-patente { transition: transform 0.15s; }
+  small { font-size: 11px; color: var(--gris); }
+
+  &:hover app-patente { transform: translateY(-3px); }
+  &:active app-patente { transform: translateY(1px); }
+  &:focus-visible { outline: 3px solid var(--amarillo); outline-offset: 4px; border-radius: 10px; }
 }
 
 .etiqueta { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--gris); }
@@ -52,6 +131,18 @@ $alto-pedalera: 230px; // espacio que se reserva abajo para la pedalera
   &::after { right: 14px; }
 }
 
+// Línea punteada del medio: capa propia, detrás de las publicaciones, que anima GSAP
+.carriles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(180deg, var(--blanco) 0 42px, transparent 42px 84px);
+  background-size: 6px 84px;
+  background-position: 50% 0;
+  background-repeat: repeat-y;
+}
+
 .carretera {
   height: 100%;
   padding: 24px 46px $alto-pedalera;
@@ -63,14 +154,14 @@ $alto-pedalera: 230px; // espacio que se reserva abajo para la pedalera
   outline: none;
   overflow-anchor: none; // que el navegador no "persiga" la publicación anterior al reordenar
 
-  // línea de carriles + textura de asfalto: se mueven con el scroll
+  // textura de asfalto (se mueve con el scroll); las líneas del carril están en .carriles
+  position: relative;
+  z-index: 1;
   background-image:
-    repeating-linear-gradient(180deg, var(--blanco) 0 42px, transparent 42px 84px),
     radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.5px),
     radial-gradient(rgba(0, 0, 0, 0.35) 1px, transparent 1.5px);
-  background-size: 6px 84px, 7px 7px, 11px 11px;
-  background-position: center top, 0 0, 3px 4px;
-  background-repeat: repeat-y, repeat, repeat;
+  background-size: 7px 7px, 11px 11px;
+  background-position: 0 0, 3px 4px;
   background-attachment: local;
 
   &::-webkit-scrollbar { display: none; }

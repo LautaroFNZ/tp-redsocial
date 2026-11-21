@@ -1,8 +1,8 @@
 $lateral: 330px;
-$ruta: 440px;
+$ruta: 500px; // tiene que coincidir con $ancho-ruta de publicaciones.scss
 $separacion: 32px;
 
-// Bloque centrado: [lateral 330] [ruta 440] [comentarios 330] → la ruta queda en el centro
+// Bloque centrado: [lateral 330] [ruta 500] [comentarios 330] → la ruta queda en el centro
 .layout {
   display: grid;
   grid-template-columns: $lateral minmax(0, 1fr);
